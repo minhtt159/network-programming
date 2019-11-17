@@ -1,0 +1,41 @@
+syntax = "proto2";
+
+package BTL;
+
+message MessageType {
+	enum Message {
+		HOSTINFO = 1;
+		FILEINFO = 2;
+		FILEDATA = 3;
+		COMMONREPLY = 4;
+	}
+	required Message message = 1;
+	required uint64 timeStamp = 2;
+}
+
+message HostInfo {
+	required string host = 1;
+	required uint32 port = 2;
+	required bool isServer = 3;
+}
+
+message ClientInfo{
+	required string host = 1;
+	required uint32 port = 2;
+	repeated HostInfo peer = 3;
+}
+
+message FileInfo {
+	required string hash = 1;
+	required string fileName = 2;
+}
+
+message FileData {
+	required string fileName = 1;
+	required uint32 offset = 2;
+	optional bytes data = 3;
+}
+
+message CommonReply {
+	required uint32 status = 1; 
+}
