@@ -10,27 +10,53 @@
 
 void getLocalIP();
 
-class Sockpeer
-{
-private:
-	Network networkObj;
-public:
-	void run();
-	Sockpeer();
-	~Sockpeer();
-	
-};
-
 class Network
 {
 private:
-	char* host;
-	int port;
+	// Socket for sending message
 	int sendfd;
+	// Socket for receiving message
 	int recvfd;
 public:
-	Network();
+	// Send UDP packet to peer
+	size_t networkSend(std::string HOST, int PORT, char* BUFFER);
+	// Recv UDP packet from peer, return received bytes & information about sender info
+	size_t networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT);
+	/* 
+	Contructor:
+	- create listening socket at PORT
+	*/
+	Network(int port);
+	// Destructor
 	~Network();
-	send();
-	char* recv();
+};
+
+class Sockpeer
+{
+private:
+	// Network object for send and recv
+	Network* networkObj;
+	// Client Info list
+	BTL::ClientInfo* peers;
+	// buffer size
+	size_t BUFFSIZE;
+public:
+	// Return true if connected to network, false otherwise
+	bool connected;
+	// 
+	bool isServer;
+	// Main run loop
+	void run();
+	/*
+	Contructor:
+	if host == NULL:
+		- this is a server
+		- open listening socket at PORT
+	if host != NULL:
+		- this is a client
+		- connect to HOST:PORT
+	*/
+	Sockpeer(std::string host, int port, bool isServer);
+	// Destructor
+	~Sockpeer();
 };

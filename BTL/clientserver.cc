@@ -30,44 +30,139 @@ void getLocalIP(){
 
 // Constructor
 Sockpeer::Sockpeer(std::string host, int port, bool isServer){
-    // Create networkObj
-
+    // Create listen socket at networkObj
+    this->networkObj = new Network(port);
+    // Create client info list -> this might contain nothing at start
+    this->peers      = new BTL::ClientInfo();
+    // BUFFSIZE
+    this->BUFFSIZE = 10*1024; // 10KB for testing 
     // 
-    BTL::HostInfo 
+    this->isServer = isServer;
+    // Helper variables
+    size_t n;
 
-    if (isServer){
-        // If server, always listen from socket
-        
-    }
-    else {
-        // If client, try to ask for server
+    if (!isServer) {
+        // Add server to peers list
+        BTL::HostInfo* server = this->peers->add_peer();
+        server->set_host(host);
+        server->set_port(port);
+        server->set_isserver(true);
 
+        // Try to send server for peers
+        std::string dataOut = "lewlew";
+        char* pkt = new char[dataOut.length()+1];
+        std::strcpy(pkt, dataOut.c_str());
+        while (true) {
+            n = this->networkObj->networkSend(server->host(), server->port(), pkt);
+            if ( n == dataOut.length() ){
+                break;
+            }
+        }
+
+        // Try to recv server for peers
+        char* serverReply = new char[BUFFSIZE];
+        sockaddr_in servaddr;
+        n = this->networkObj->networkRecv(serverReply, this->BUFFSIZE, (sockaddr_in *) &servaddr);
+        if (n < 0 or strlen(serverReply) == 0){
+            std::cout << "No reply from server\n";
+            this->connected = false;
+            return;
+        }
+        printf("Read something from server");
+        // Parse readDelimitedFrom
+        // Update peer
     }
+    this->connected = true;
+    return;
 };
 
-Sockpeer::run(){
-
+void Sockpeer::run(){
+    // Helper variable
+    size_t n;
+    if (this->isServer){
+        // loop for reading message
+        while (true) {
+            char serverReply[this->BUFFSIZE];
+            struct sockaddr_in client_address;
+            n = this->networkObj->networkRecv(serverReply, this->BUFFSIZE, &client_address);
+            std::string serverHost = inet_ntoa(client_address.sin_addr);
+            std::cout << serverReply << " " << serverHost << std::endl;
+        }
+    }
+    else {
+        // ask server 
+    }
+    return;
 };
 
 // Destructor
 Sockpeer::~Sockpeer(){
-
+    return;
 };
 
-/*
-Constructor
-- Create sockets:
-    recv: bind    to localhost : port
-    send: connect to host      : port
+/*--------------------------------------------------*/
+
+/* 
+Contructor:
+- create listening socket at PORT
 */
-Network::Network(){
-    
+Network::Network(int PORT){
+    // Create recvfd
+    if ( (this->recvfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
+        std::cout<< "Network::Network socket creation failed\n"; 
+        // exit(EXIT_FAILURE); 
+    }
+
+    // Create socket address information
+    struct sockaddr_in servaddr;
+    memset(&servaddr, 0, sizeof(servaddr));
+    // Filling server information 
+    servaddr.sin_family         = AF_INET;      // IPv4 
+    servaddr.sin_addr.s_addr    = INADDR_ANY;   // 0.0.0.0 
+    servaddr.sin_port           = htons(PORT);  // PORT
+
+    // Bind the socket with the server address
+    if ( bind(this->recvfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { 
+        std::cout << "Network:Network bind failed\n"; 
+        // exit(EXIT_FAILURE);
+    }
 };
-Network::~Network(){
-    
+
+// Send BUFFER to HOST:PORT -> return number of characters sent
+size_t Network::networkSend(std::string HOST, int PORT, char* BUFFER) {
+    // Creating socket file descriptor 
+    if ( (sendfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
+        std::cout << "Network::networkSend socket creation failed\n"; 
+        // exit(EXIT_FAILURE);
+        return -1; 
+    }
+
+    // Create socket address information
+    struct sockaddr_in servaddr;
+    memset(&servaddr, 0, sizeof(servaddr)); 
+
+    // Filling server information 
+    servaddr.sin_family = AF_INET; 
+    servaddr.sin_port = htons(PORT); 
+    servaddr.sin_addr.s_addr = inet_addr(HOST.c_str()); 
+
+    // Send BUFFER to SERVER, no MSG
+    return send(sendfd, BUFFER, strlen(BUFFER), 0);
 };
 
 // Read bytes from listen socket
-char* Network::recv(){
+size_t Network::networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT){
+    if (!this->recvfd){
+        std::cout << "Network:networkRecv recvfd not initialized";
+        return -1;
+    }
+    // Clear client socket address information
+    socklen_t clientLength = sizeof(*CLIENT);
+    memset(CLIENT, 0, clientLength);
+    // Recv with MSG_WAITALL
+    return recvfrom(this->recvfd, BUFFER, BUFFSIZE, MSG_WAITALL, (struct sockaddr *)CLIENT, &clientLength);
+};
 
-}
+Network::~Network(){
+    return;
+};

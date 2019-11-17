@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	}
 	else if (argc == 2) {
 		isServer = true;
-		HOST = NULL;
+		HOST = "";
 		PORT = strtol(argv[1], NULL, 10);
 	}
 	else {

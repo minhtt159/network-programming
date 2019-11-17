@@ -48,7 +48,7 @@ struct TableStruct_udp_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[5]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[7]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -56,6 +56,12 @@ struct TableStruct_udp_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_udp_2eproto;
 namespace BTL {
+class ClientInfo;
+class ClientInfoDefaultTypeInternal;
+extern ClientInfoDefaultTypeInternal _ClientInfo_default_instance_;
+class ClientInfoReply;
+class ClientInfoReplyDefaultTypeInternal;
+extern ClientInfoReplyDefaultTypeInternal _ClientInfoReply_default_instance_;
 class CommonReply;
 class CommonReplyDefaultTypeInternal;
 extern CommonReplyDefaultTypeInternal _CommonReply_default_instance_;
@@ -73,6 +79,8 @@ class MessageTypeDefaultTypeInternal;
 extern MessageTypeDefaultTypeInternal _MessageType_default_instance_;
 }  // namespace BTL
 PROTOBUF_NAMESPACE_OPEN
+template<> ::BTL::ClientInfo* Arena::CreateMaybeMessage<::BTL::ClientInfo>(Arena*);
+template<> ::BTL::ClientInfoReply* Arena::CreateMaybeMessage<::BTL::ClientInfoReply>(Arena*);
 template<> ::BTL::CommonReply* Arena::CreateMaybeMessage<::BTL::CommonReply>(Arena*);
 template<> ::BTL::FileData* Arena::CreateMaybeMessage<::BTL::FileData>(Arena*);
 template<> ::BTL::FileInfo* Arena::CreateMaybeMessage<::BTL::FileInfo>(Arena*);
@@ -255,8 +263,22 @@ class MessageType :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kTimeStampFieldNumber = 2,
     kMessageFieldNumber = 1,
   };
+  // required uint64 timeStamp = 2;
+  bool has_timestamp() const;
+  private:
+  bool _internal_has_timestamp() const;
+  public:
+  void clear_timestamp();
+  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp() const;
+  void set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_timestamp() const;
+  void _internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
   // required .BTL.MessageType.Message message = 1;
   bool has_message() const;
   private:
@@ -274,9 +296,13 @@ class MessageType :
  private:
   class _Internal;
 
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp_;
   int message_;
   friend struct ::TableStruct_udp_2eproto;
 };
@@ -397,6 +423,7 @@ class HostInfo :
   enum : int {
     kHostFieldNumber = 1,
     kPortFieldNumber = 2,
+    kIsServerFieldNumber = 3,
   };
   // required string host = 1;
   bool has_host() const;
@@ -431,6 +458,19 @@ class HostInfo :
   void _internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
+  // required bool isServer = 3;
+  bool has_isserver() const;
+  private:
+  bool _internal_has_isserver() const;
+  public:
+  void clear_isserver();
+  bool isserver() const;
+  void set_isserver(bool value);
+  private:
+  bool _internal_isserver() const;
+  void _internal_set_isserver(bool value);
+  public:
+
   // @@protoc_insertion_point(class_scope:BTL.HostInfo)
  private:
   class _Internal;
@@ -443,6 +483,350 @@ class HostInfo :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr host_;
   ::PROTOBUF_NAMESPACE_ID::uint32 port_;
+  bool isserver_;
+  friend struct ::TableStruct_udp_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ClientInfo :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:BTL.ClientInfo) */ {
+ public:
+  ClientInfo();
+  virtual ~ClientInfo();
+
+  ClientInfo(const ClientInfo& from);
+  ClientInfo(ClientInfo&& from) noexcept
+    : ClientInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ClientInfo& operator=(const ClientInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClientInfo& operator=(ClientInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ClientInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ClientInfo* internal_default_instance() {
+    return reinterpret_cast<const ClientInfo*>(
+               &_ClientInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(ClientInfo& a, ClientInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClientInfo* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ClientInfo* New() const final {
+    return CreateMaybeMessage<ClientInfo>(nullptr);
+  }
+
+  ClientInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ClientInfo>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ClientInfo& from);
+  void MergeFrom(const ClientInfo& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* InternalSerializeWithCachedSizesToArray(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClientInfo* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "BTL.ClientInfo";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_udp_2eproto);
+    return ::descriptor_table_udp_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPeerFieldNumber = 3,
+    kHostFieldNumber = 1,
+    kPortFieldNumber = 2,
+  };
+  // repeated .BTL.HostInfo peer = 3;
+  int peer_size() const;
+  private:
+  int _internal_peer_size() const;
+  public:
+  void clear_peer();
+  ::BTL::HostInfo* mutable_peer(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo >*
+      mutable_peer();
+  private:
+  const ::BTL::HostInfo& _internal_peer(int index) const;
+  ::BTL::HostInfo* _internal_add_peer();
+  public:
+  const ::BTL::HostInfo& peer(int index) const;
+  ::BTL::HostInfo* add_peer();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo >&
+      peer() const;
+
+  // required string host = 1;
+  bool has_host() const;
+  private:
+  bool _internal_has_host() const;
+  public:
+  void clear_host();
+  const std::string& host() const;
+  void set_host(const std::string& value);
+  void set_host(std::string&& value);
+  void set_host(const char* value);
+  void set_host(const char* value, size_t size);
+  std::string* mutable_host();
+  std::string* release_host();
+  void set_allocated_host(std::string* host);
+  private:
+  const std::string& _internal_host() const;
+  void _internal_set_host(const std::string& value);
+  std::string* _internal_mutable_host();
+  public:
+
+  // required uint32 port = 2;
+  bool has_port() const;
+  private:
+  bool _internal_has_port() const;
+  public:
+  void clear_port();
+  ::PROTOBUF_NAMESPACE_ID::uint32 port() const;
+  void set_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_port() const;
+  void _internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:BTL.ClientInfo)
+ private:
+  class _Internal;
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo > peer_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr host_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 port_;
+  friend struct ::TableStruct_udp_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ClientInfoReply :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:BTL.ClientInfoReply) */ {
+ public:
+  ClientInfoReply();
+  virtual ~ClientInfoReply();
+
+  ClientInfoReply(const ClientInfoReply& from);
+  ClientInfoReply(ClientInfoReply&& from) noexcept
+    : ClientInfoReply() {
+    *this = ::std::move(from);
+  }
+
+  inline ClientInfoReply& operator=(const ClientInfoReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClientInfoReply& operator=(ClientInfoReply&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ClientInfoReply& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ClientInfoReply* internal_default_instance() {
+    return reinterpret_cast<const ClientInfoReply*>(
+               &_ClientInfoReply_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(ClientInfoReply& a, ClientInfoReply& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClientInfoReply* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ClientInfoReply* New() const final {
+    return CreateMaybeMessage<ClientInfoReply>(nullptr);
+  }
+
+  ClientInfoReply* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ClientInfoReply>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ClientInfoReply& from);
+  void MergeFrom(const ClientInfoReply& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* InternalSerializeWithCachedSizesToArray(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClientInfoReply* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "BTL.ClientInfoReply";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_udp_2eproto);
+    return ::descriptor_table_udp_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kTimeStampFieldNumber = 2,
+    kStatusFieldNumber = 1,
+  };
+  // required uint64 timeStamp = 2;
+  bool has_timestamp() const;
+  private:
+  bool _internal_has_timestamp() const;
+  public:
+  void clear_timestamp();
+  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp() const;
+  void set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_timestamp() const;
+  void _internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
+  // required uint32 status = 1;
+  bool has_status() const;
+  private:
+  bool _internal_has_status() const;
+  public:
+  void clear_status();
+  ::PROTOBUF_NAMESPACE_ID::uint32 status() const;
+  void set_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_status() const;
+  void _internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:BTL.ClientInfoReply)
+ private:
+  class _Internal;
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 status_;
   friend struct ::TableStruct_udp_2eproto;
 };
 // -------------------------------------------------------------------
@@ -496,7 +880,7 @@ class FileInfo :
                &_FileInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    4;
 
   friend void swap(FileInfo& a, FileInfo& b) {
     a.Swap(&b);
@@ -668,7 +1052,7 @@ class FileData :
                &_FileData_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    5;
 
   friend void swap(FileData& a, FileData& b) {
     a.Swap(&b);
@@ -734,7 +1118,6 @@ class FileData :
   enum : int {
     kFileNameFieldNumber = 1,
     kDataFieldNumber = 3,
-    kTimeStampFieldNumber = 4,
     kOffsetFieldNumber = 2,
   };
   // required string fileName = 1;
@@ -777,19 +1160,6 @@ class FileData :
   std::string* _internal_mutable_data();
   public:
 
-  // required uint64 timeStamp = 4;
-  bool has_timestamp() const;
-  private:
-  bool _internal_has_timestamp() const;
-  public:
-  void clear_timestamp();
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp() const;
-  void set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_timestamp() const;
-  void _internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // required uint32 offset = 2;
   bool has_offset() const;
   private:
@@ -815,7 +1185,6 @@ class FileData :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr filename_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp_;
   ::PROTOBUF_NAMESPACE_ID::uint32 offset_;
   friend struct ::TableStruct_udp_2eproto;
 };
@@ -870,7 +1239,7 @@ class CommonReply :
                &_CommonReply_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    6;
 
   friend void swap(CommonReply& a, CommonReply& b) {
     a.Swap(&b);
@@ -934,22 +1303,8 @@ class CommonReply :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTimeStampFieldNumber = 2,
     kStatusFieldNumber = 1,
   };
-  // required uint64 timeStamp = 2;
-  bool has_timestamp() const;
-  private:
-  bool _internal_has_timestamp() const;
-  public:
-  void clear_timestamp();
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp() const;
-  void set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_timestamp() const;
-  void _internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // required uint32 status = 1;
   bool has_status() const;
   private:
@@ -967,13 +1322,9 @@ class CommonReply :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp_;
   ::PROTOBUF_NAMESPACE_ID::uint32 status_;
   friend struct ::TableStruct_udp_2eproto;
 };
@@ -990,7 +1341,7 @@ class CommonReply :
 
 // required .BTL.MessageType.Message message = 1;
 inline bool MessageType::_internal_has_message() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline bool MessageType::has_message() const {
@@ -998,7 +1349,7 @@ inline bool MessageType::has_message() const {
 }
 inline void MessageType::clear_message() {
   message_ = 1;
-  _has_bits_[0] &= ~0x00000001u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::BTL::MessageType_Message MessageType::_internal_message() const {
   return static_cast< ::BTL::MessageType_Message >(message_);
@@ -1009,12 +1360,40 @@ inline ::BTL::MessageType_Message MessageType::message() const {
 }
 inline void MessageType::_internal_set_message(::BTL::MessageType_Message value) {
   assert(::BTL::MessageType_Message_IsValid(value));
-  _has_bits_[0] |= 0x00000001u;
+  _has_bits_[0] |= 0x00000002u;
   message_ = value;
 }
 inline void MessageType::set_message(::BTL::MessageType_Message value) {
   _internal_set_message(value);
   // @@protoc_insertion_point(field_set:BTL.MessageType.message)
+}
+
+// required uint64 timeStamp = 2;
+inline bool MessageType::_internal_has_timestamp() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool MessageType::has_timestamp() const {
+  return _internal_has_timestamp();
+}
+inline void MessageType::clear_timestamp() {
+  timestamp_ = PROTOBUF_ULONGLONG(0);
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 MessageType::_internal_timestamp() const {
+  return timestamp_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 MessageType::timestamp() const {
+  // @@protoc_insertion_point(field_get:BTL.MessageType.timeStamp)
+  return _internal_timestamp();
+}
+inline void MessageType::_internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _has_bits_[0] |= 0x00000001u;
+  timestamp_ = value;
+}
+inline void MessageType::set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_timestamp(value);
+  // @@protoc_insertion_point(field_set:BTL.MessageType.timeStamp)
 }
 
 // -------------------------------------------------------------------
@@ -1118,6 +1497,236 @@ inline void HostInfo::_internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) 
 inline void HostInfo::set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_port(value);
   // @@protoc_insertion_point(field_set:BTL.HostInfo.port)
+}
+
+// required bool isServer = 3;
+inline bool HostInfo::_internal_has_isserver() const {
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool HostInfo::has_isserver() const {
+  return _internal_has_isserver();
+}
+inline void HostInfo::clear_isserver() {
+  isserver_ = false;
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline bool HostInfo::_internal_isserver() const {
+  return isserver_;
+}
+inline bool HostInfo::isserver() const {
+  // @@protoc_insertion_point(field_get:BTL.HostInfo.isServer)
+  return _internal_isserver();
+}
+inline void HostInfo::_internal_set_isserver(bool value) {
+  _has_bits_[0] |= 0x00000004u;
+  isserver_ = value;
+}
+inline void HostInfo::set_isserver(bool value) {
+  _internal_set_isserver(value);
+  // @@protoc_insertion_point(field_set:BTL.HostInfo.isServer)
+}
+
+// -------------------------------------------------------------------
+
+// ClientInfo
+
+// required string host = 1;
+inline bool ClientInfo::_internal_has_host() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ClientInfo::has_host() const {
+  return _internal_has_host();
+}
+inline void ClientInfo::clear_host() {
+  host_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& ClientInfo::host() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfo.host)
+  return _internal_host();
+}
+inline void ClientInfo::set_host(const std::string& value) {
+  _internal_set_host(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfo.host)
+}
+inline std::string* ClientInfo::mutable_host() {
+  // @@protoc_insertion_point(field_mutable:BTL.ClientInfo.host)
+  return _internal_mutable_host();
+}
+inline const std::string& ClientInfo::_internal_host() const {
+  return host_.GetNoArena();
+}
+inline void ClientInfo::_internal_set_host(const std::string& value) {
+  _has_bits_[0] |= 0x00000001u;
+  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ClientInfo::set_host(std::string&& value) {
+  _has_bits_[0] |= 0x00000001u;
+  host_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:BTL.ClientInfo.host)
+}
+inline void ClientInfo::set_host(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _has_bits_[0] |= 0x00000001u;
+  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:BTL.ClientInfo.host)
+}
+inline void ClientInfo::set_host(const char* value, size_t size) {
+  _has_bits_[0] |= 0x00000001u;
+  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:BTL.ClientInfo.host)
+}
+inline std::string* ClientInfo::_internal_mutable_host() {
+  _has_bits_[0] |= 0x00000001u;
+  return host_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ClientInfo::release_host() {
+  // @@protoc_insertion_point(field_release:BTL.ClientInfo.host)
+  if (!has_host()) {
+    return nullptr;
+  }
+  _has_bits_[0] &= ~0x00000001u;
+  return host_.ReleaseNonDefaultNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ClientInfo::set_allocated_host(std::string* host) {
+  if (host != nullptr) {
+    _has_bits_[0] |= 0x00000001u;
+  } else {
+    _has_bits_[0] &= ~0x00000001u;
+  }
+  host_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), host);
+  // @@protoc_insertion_point(field_set_allocated:BTL.ClientInfo.host)
+}
+
+// required uint32 port = 2;
+inline bool ClientInfo::_internal_has_port() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ClientInfo::has_port() const {
+  return _internal_has_port();
+}
+inline void ClientInfo::clear_port() {
+  port_ = 0u;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::_internal_port() const {
+  return port_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::port() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfo.port)
+  return _internal_port();
+}
+inline void ClientInfo::_internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _has_bits_[0] |= 0x00000002u;
+  port_ = value;
+}
+inline void ClientInfo::set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_port(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfo.port)
+}
+
+// repeated .BTL.HostInfo peer = 3;
+inline int ClientInfo::_internal_peer_size() const {
+  return peer_.size();
+}
+inline int ClientInfo::peer_size() const {
+  return _internal_peer_size();
+}
+inline void ClientInfo::clear_peer() {
+  peer_.Clear();
+}
+inline ::BTL::HostInfo* ClientInfo::mutable_peer(int index) {
+  // @@protoc_insertion_point(field_mutable:BTL.ClientInfo.peer)
+  return peer_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo >*
+ClientInfo::mutable_peer() {
+  // @@protoc_insertion_point(field_mutable_list:BTL.ClientInfo.peer)
+  return &peer_;
+}
+inline const ::BTL::HostInfo& ClientInfo::_internal_peer(int index) const {
+  return peer_.Get(index);
+}
+inline const ::BTL::HostInfo& ClientInfo::peer(int index) const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfo.peer)
+  return _internal_peer(index);
+}
+inline ::BTL::HostInfo* ClientInfo::_internal_add_peer() {
+  return peer_.Add();
+}
+inline ::BTL::HostInfo* ClientInfo::add_peer() {
+  // @@protoc_insertion_point(field_add:BTL.ClientInfo.peer)
+  return _internal_add_peer();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo >&
+ClientInfo::peer() const {
+  // @@protoc_insertion_point(field_list:BTL.ClientInfo.peer)
+  return peer_;
+}
+
+// -------------------------------------------------------------------
+
+// ClientInfoReply
+
+// required uint32 status = 1;
+inline bool ClientInfoReply::_internal_has_status() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ClientInfoReply::has_status() const {
+  return _internal_has_status();
+}
+inline void ClientInfoReply::clear_status() {
+  status_ = 0u;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfoReply::_internal_status() const {
+  return status_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfoReply::status() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfoReply.status)
+  return _internal_status();
+}
+inline void ClientInfoReply::_internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _has_bits_[0] |= 0x00000002u;
+  status_ = value;
+}
+inline void ClientInfoReply::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfoReply.status)
+}
+
+// required uint64 timeStamp = 2;
+inline bool ClientInfoReply::_internal_has_timestamp() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ClientInfoReply::has_timestamp() const {
+  return _internal_has_timestamp();
+}
+inline void ClientInfoReply::clear_timestamp() {
+  timestamp_ = PROTOBUF_ULONGLONG(0);
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 ClientInfoReply::_internal_timestamp() const {
+  return timestamp_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 ClientInfoReply::timestamp() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfoReply.timeStamp)
+  return _internal_timestamp();
+}
+inline void ClientInfoReply::_internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _has_bits_[0] |= 0x00000001u;
+  timestamp_ = value;
+}
+inline void ClientInfoReply::set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_timestamp(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfoReply.timeStamp)
 }
 
 // -------------------------------------------------------------------
@@ -1343,7 +1952,7 @@ inline void FileData::set_allocated_filename(std::string* filename) {
 
 // required uint32 offset = 2;
 inline bool FileData::_internal_has_offset() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline bool FileData::has_offset() const {
@@ -1351,7 +1960,7 @@ inline bool FileData::has_offset() const {
 }
 inline void FileData::clear_offset() {
   offset_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 FileData::_internal_offset() const {
   return offset_;
@@ -1361,7 +1970,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 FileData::offset() const {
   return _internal_offset();
 }
 inline void FileData::_internal_set_offset(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000004u;
   offset_ = value;
 }
 inline void FileData::set_offset(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -1440,41 +2049,13 @@ inline void FileData::set_allocated_data(std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:BTL.FileData.data)
 }
 
-// required uint64 timeStamp = 4;
-inline bool FileData::_internal_has_timestamp() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool FileData::has_timestamp() const {
-  return _internal_has_timestamp();
-}
-inline void FileData::clear_timestamp() {
-  timestamp_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 FileData::_internal_timestamp() const {
-  return timestamp_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 FileData::timestamp() const {
-  // @@protoc_insertion_point(field_get:BTL.FileData.timeStamp)
-  return _internal_timestamp();
-}
-inline void FileData::_internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00000004u;
-  timestamp_ = value;
-}
-inline void FileData::set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:BTL.FileData.timeStamp)
-}
-
 // -------------------------------------------------------------------
 
 // CommonReply
 
 // required uint32 status = 1;
 inline bool CommonReply::_internal_has_status() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline bool CommonReply::has_status() const {
@@ -1482,7 +2063,7 @@ inline bool CommonReply::has_status() const {
 }
 inline void CommonReply::clear_status() {
   status_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 CommonReply::_internal_status() const {
   return status_;
@@ -1492,7 +2073,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 CommonReply::status() const {
   return _internal_status();
 }
 inline void CommonReply::_internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000001u;
   status_ = value;
 }
 inline void CommonReply::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -1500,37 +2081,13 @@ inline void CommonReply::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:BTL.CommonReply.status)
 }
 
-// required uint64 timeStamp = 2;
-inline bool CommonReply::_internal_has_timestamp() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool CommonReply::has_timestamp() const {
-  return _internal_has_timestamp();
-}
-inline void CommonReply::clear_timestamp() {
-  timestamp_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 CommonReply::_internal_timestamp() const {
-  return timestamp_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 CommonReply::timestamp() const {
-  // @@protoc_insertion_point(field_get:BTL.CommonReply.timeStamp)
-  return _internal_timestamp();
-}
-inline void CommonReply::_internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00000001u;
-  timestamp_ = value;
-}
-inline void CommonReply::set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:BTL.CommonReply.timeStamp)
-}
-
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
