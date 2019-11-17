@@ -60,7 +60,7 @@ std::string Sockpeer::wrapMessage(BTL::MessageType::Message msgType, google::pro
     return stream.str();
 };
 
-bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, google::protobuf::Message* BTLMessage, std::string dataIn){
+bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, std::string* BTLMessageString, std::string dataIn){
     std::stringstream stream = std::stringstream(dataIn);
     google::protobuf::io::IstreamInputStream zstream(&stream);
     
@@ -69,17 +69,19 @@ bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, google::prot
     google::protobuf::util::ParseDelimitedFromZeroCopyStream(internal_MessageType, &zstream, &clean_eof);
     
     if (internal_MessageType->message() == BTL::MessageType::HOSTINFO){
-        BTLMessage = new BTL::HostInfo();
+        BTL::HostInfo BTLMessage;
+        google::protobuf::util::ParseDelimitedFromZeroCopyStream(&BTLMessage, &zstream, &clean_eof);
+        BTLMessage.SerializeToString(BTLMessageString);
     }
     else if (internal_MessageType->message() == BTL::MessageType::CLIENTINFO){
-        BTLMessage = new BTL::ClientInfo();
+        BTL::ClientInfo BTLMessage;
+        google::protobuf::util::ParseDelimitedFromZeroCopyStream(&BTLMessage, &zstream, &clean_eof);
+        BTLMessage.SerializeToString(BTLMessageString);
     }
     else {
         std::cout << "Sockpeer::parseMessage MessageType not found";
         return false;
     }
-    clean_eof = true;
-    google::protobuf::util::ParseDelimitedFromZeroCopyStream(BTLMessage, &zstream, &clean_eof);
     return true;
 }
 
@@ -138,19 +140,18 @@ void Sockpeer::run(){
 
             // Parse message
             BTL::MessageType clientMsg;
-            google::protobuf::Message* BTLMessage;
-
-            if (parseMessage(&clientMsg, BTLMessage, serverReply) == false){
+            std::string BTLMessageString;
+            if (parseMessage(&clientMsg, &BTLMessageString, serverReply) == false){
                 continue;
             }
 
             if (clientMsg.message() == BTL::MessageType::CLIENTINFO) {
-
+                
             }
             else if (clientMsg.message() == BTL::MessageType::HOSTINFO) {
                 // Parse from client
                 BTL::HostInfo server = BTL::HostInfo();
-                server.ParseFromString(BTLMessage->SerializeAsString());
+                server.ParseFromString(BTLMessageString);
 
                 // Send client HostInfo itself
                 BTL::HostInfo client;
