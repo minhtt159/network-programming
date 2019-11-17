@@ -22,9 +22,9 @@ private:
 	int recvfd;
 public:
 	// Send UDP packet to peer
-	size_t networkSend(std::string HOST, int PORT, char* BUFFER);
+	bool networkSend(std::string HOST, int PORT, std::string BUFFER);
 	// Recv UDP packet from peer, return received bytes & information about sender info
-	size_t networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT);
+	bool networkRecv(std::string* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT);
 	/* 
 	Contructor:
 	- create listening socket at PORT

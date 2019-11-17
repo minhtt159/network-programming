@@ -70,8 +70,6 @@ Sockpeer::Sockpeer(std::string host, int port, bool isServer){
     this->BUFFSIZE = 10*1024; // 10KB for testing 
     // 
     this->isServer = isServer;
-    // Helper variables
-    size_t n;
 
     if (!isServer) {
         // Add server to peers list
@@ -80,27 +78,20 @@ Sockpeer::Sockpeer(std::string host, int port, bool isServer){
         server->set_port(port);
         server->set_isserver(true);
 
-        // Try to send server for peers
-        std::string dataOut = wrapMessage(BTL::MessageType::CLIENTINFO, this->peers);
-        // std::cout << string_to_hex(dataOut) << std::endl;
-        char* pkt = new char[dataOut.length()+1];
-        std::strcpy(pkt, dataOut.c_str());
-        // return;
+        // Try to send server info to itself
+        std::string dataOut = wrapMessage(BTL::MessageType::HOSTINFO, server);
+        this->networkObj->networkSend(server->host(), server->port(), dataOut); 
 
-        while (this->networkObj->networkSend(server->host(), server->port(), pkt) == false); 
-        // std::cout << "here\n";
-        // Try to recv server for peers
-        char serverReply[BUFFSIZE];
+        // Try to recv this->HOSTINFO from server
+        std::string serverReply;
         struct sockaddr_in servaddr;
-        n = this->networkObj->networkRecv(serverReply, this->BUFFSIZE, &servaddr);
-        if (n < 0 or strlen(serverReply) == 0){
+        this->networkObj->networkRecv(&serverReply, this->BUFFSIZE, &servaddr);
+        if (serverReply.length() == 0){
             std::cout << "No reply from server\n";
             this->connected = false;
             return;
         }
         printf("Read something from server");
-        // Parse readDelimitedFrom
-        // Update peer
     }
     this->connected = true;
     return;
@@ -109,40 +100,50 @@ Sockpeer::Sockpeer(std::string host, int port, bool isServer){
 void Sockpeer::run(){
     // Helper variable
     size_t n;
-    // size_t m;
     if (this->isServer){
         // loop for reading message
         while (true) {
-            char serverReply[this->BUFFSIZE];
+            // Recv packet
+            std::string serverReply;
             struct sockaddr_in client_address;
-            n = this->networkObj->networkRecv(serverReply, this->BUFFSIZE, &client_address);
-            std::string serverHost = inet_ntoa(client_address.sin_addr);
-            // std::cout << serverReply << " " << serverHost << std::endl;
+            n = this->networkObj->networkRecv(&serverReply, this->BUFFSIZE, &client_address);
+            // Read client info
+            std::string clientHost = inet_ntoa(client_address.sin_addr);
+            int clientPort = ntohs(client_address.sin_port);
+
             // Parse message
-            BTL::MessageType * clientMsg = new BTL::MessageType;
-            bool clean_eof;
+            BTL::MessageType * clientMsg = new BTL::MessageType();
+            bool clean_eof = true;
             std::stringstream stream = std::stringstream(serverReply);
             google::protobuf::io::IstreamInputStream zstream(&stream);
             google::protobuf::util::ParseDelimitedFromZeroCopyStream(clientMsg, &zstream, &clean_eof);
             // std::string messageTypeData = serverReply[1:1+n];
             // clientMsg->ParseFromString(messageTypeData);
             std::cout << clientMsg->message() << " " << clientMsg->timestamp() << std::endl;
-            // if (clientMsg->message() == BTL::MessageType::CLIENTINFO) {
-            //     size_t m = int(serverReply[1+n]);
-            //     if (m + n + 2 != strlen(serverReply)){
-            //         std::cout << "dumeanlol\n";
-            //     }
-            //     std::string clientInfoData = serverReply[1+n:1+n+m];
-            //     BTL::ClientInfo* client = new BTL::ClientInfo;
-            //     client->ParseFromString(clientInfoData);
-            //     std::cout << client << std::endl;
-            // }
-            // // else if (clientMsg->message() == BTL::MessageType::CLIENTINFO) {
-
-            // // }
-            // else {
-            //     std::cout << "Command not found\n"; 
-            // }
+            if (clientMsg->message() == BTL::MessageType::CLIENTINFO) {
+                clean_eof = true;
+                BTL::ClientInfo* client = new BTL::ClientInfo();
+                google::protobuf::util::ParseDelimitedFromZeroCopyStream(client, &zstream, &clean_eof);
+                std::cout << client << std::endl;
+            }
+            else if (clientMsg->message() == BTL::MessageType::HOSTINFO) {
+                // Parse HostInfo
+                clean_eof = true;
+                BTL::HostInfo* server = new BTL::HostInfo();
+                google::protobuf::util::ParseDelimitedFromZeroCopyStream(server, &zstream, &clean_eof);
+                std::cout << server << std::endl;
+                // Return client HostInfo
+                BTL::HostInfo* client = new BTL::HostInfo();
+                client->set_host(clientHost);
+                client->set_port(clientPort);
+                client->set_isserver(false);
+                std::string dataOut = wrapMessage(BTL::MessageType::HOSTINFO, client);
+                this->networkObj->networkSend(client->host(), client->port(), dataOut); 
+                // Done, no need to reply ?
+            }
+            else {
+                std::cout << "Command not found\n"; 
+            }
         }
     }
     else {
@@ -184,7 +185,7 @@ Network::Network(int PORT){
 };
 
 // Send BUFFER to HOST:PORT -> return number of characters sent
-size_t Network::networkSend(std::string HOST, int PORT, char* BUFFER) {
+bool Network::networkSend(std::string HOST, int PORT, std::string BUFFER) {
     // Creating socket file descriptor 
     if ( (this->sendfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
         std::cout << "Network::networkSend socket creation failed\n"; 
@@ -200,24 +201,27 @@ size_t Network::networkSend(std::string HOST, int PORT, char* BUFFER) {
     servaddr.sin_port = htons(PORT); 
     servaddr.sin_addr.s_addr = inet_addr(HOST.c_str()); 
 
-    // printf("HOST: %s\nPORT: %d\nBUFFER: %s\n", HOST.c_str(), PORT, BUFFER);
-
+    char charBUFF[BUFFER.length() + 1];
+    memcpy(charBUFF, BUFFER.c_str(), BUFFER.length());
     // Send BUFFER to SERVER, no MSG
-    size_t n = sendto(sendfd, BUFFER, strlen(BUFFER), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+    size_t n = sendto(sendfd, charBUFF, sizeof(charBUFF), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
     close(this->sendfd);
-    return n == strlen(BUFFER);
+    return n == sizeof(charBUFF);
 };
 
 // Read bytes from listen socket
-size_t Network::networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT){
+bool Network::networkRecv(std::string* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT){
     if (!this->recvfd){
         std::cout << "Network:networkRecv recvfd not initialized";
-        return -1;
+        return false;
     }
     // Clear client socket address information
     socklen_t clientLength = sizeof(*CLIENT);
     memset(CLIENT, 0, clientLength);
-    return recvfrom(this->recvfd, BUFFER, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
+    // char charBUFF[BUFFSIZE];
+    size_t n = recvfrom(this->recvfd, BUFFER, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
+    // *BUFFSIZE = charBUFF;
+    return true;
 };
 
 Network::~Network(){
