@@ -60,7 +60,7 @@ std::string Sockpeer::wrapMessage(BTL::MessageType::Message msgType, google::pro
     return stream.str();
 };
 
-bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, std::string* BTLMessageString, std::string dataIn){
+bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, google::protobuf::Message* BTLMessage, std::string dataIn){
     std::stringstream stream = std::stringstream(dataIn);
     google::protobuf::io::IstreamInputStream zstream(&stream);
     
@@ -69,19 +69,17 @@ bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, std::string*
     google::protobuf::util::ParseDelimitedFromZeroCopyStream(internal_MessageType, &zstream, &clean_eof);
     
     if (internal_MessageType->message() == BTL::MessageType::HOSTINFO){
-        BTL::HostInfo BTLMessage;
-        google::protobuf::util::ParseDelimitedFromZeroCopyStream(&BTLMessage, &zstream, &clean_eof);
-        *BTLMessageString = BTLMessage.SerializeAsString().c_str();
+        BTLMessage = new BTL::HostInfo();
     }
     else if (internal_MessageType->message() == BTL::MessageType::CLIENTINFO){
-        BTL::ClientInfo BTLMessage;
-        google::protobuf::util::ParseDelimitedFromZeroCopyStream(&BTLMessage, &zstream, &clean_eof);
-        *BTLMessageString = BTLMessage.SerializeAsString().c_str();
+        BTLMessage = new BTL::ClientInfo();
     }
     else {
         std::cout << "Sockpeer::parseMessage MessageType not found";
         return false;
     }
+    clean_eof = true;
+    google::protobuf::util::ParseDelimitedFromZeroCopyStream(BTLMessage, &zstream, &clean_eof);
     return true;
 }
 
@@ -140,9 +138,9 @@ void Sockpeer::run(){
 
             // Parse message
             BTL::MessageType clientMsg;
-            std::string BTLMessageString;
+            google::protobuf::Message* BTLMessage;
 
-            if (parseMessage(&clientMsg, &BTLMessageString, serverReply) == false){
+            if (parseMessage(&clientMsg, BTLMessage, serverReply) == false){
                 continue;
             }
 
@@ -151,8 +149,8 @@ void Sockpeer::run(){
             }
             else if (clientMsg.message() == BTL::MessageType::HOSTINFO) {
                 // Parse from client
-                BTL::HostInfo server;
-                server.ParseFromString(BTLMessageString);
+                BTL::HostInfo server = BTL::HostInfo();
+                server.ParseFromString(BTLMessage->SerializeAsString());
 
                 // Send client HostInfo itself
                 BTL::HostInfo client;
@@ -241,9 +239,9 @@ bool Network::networkRecv(std::string* BUFFER, size_t BUFFSIZE, sockaddr_in * CL
     // Clear client socket address information
     socklen_t clientLength = sizeof(*CLIENT);
     memset(CLIENT, 0, clientLength);
-    // char charBUFF[BUFFSIZE];
-    size_t n = recvfrom(this->recvfd, BUFFER, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
-    // *BUFFSIZE = charBUFF;
+    char charBUFF[BUFFSIZE];
+    size_t n = recvfrom(this->recvfd, charBUFF, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
+    *BUFFER = charBUFF;
     return true;
 };
 
