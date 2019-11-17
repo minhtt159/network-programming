@@ -60,6 +60,29 @@ std::string Sockpeer::wrapMessage(BTL::MessageType::Message msgType, google::pro
     return stream.str();
 };
 
+bool Sockpeer::parseMessage(BTL::MessageType* internal_MessageType, google::protobuf::Message* BTLMessage, std::string dataIn){
+    std::stringstream stream = std::stringstream(dataIn);
+    google::protobuf::io::IstreamInputStream zstream(&stream);
+    
+    internal_MessageType = new BTL::MessageType();
+    bool clean_eof = true;
+    google::protobuf::util::ParseDelimitedFromZeroCopyStream(internal_MessageType, &zstream, &clean_eof);
+    
+    if (internal_MessageType->message() == BTL::MessageType::HOSTINFO){
+        BTLMessage = new BTL::HostInfo();
+    }
+    else if (internal_MessageType->message() == BTL::MessageType::CLIENTINFO){
+        BTLMessage = new BTL::ClientInfo();
+    }
+    else {
+        std::cout << "Sockpeer::parseMessage MessageType not found";
+        return false;
+    }
+    clean_eof = true;
+    google::protobuf::util::ParseDelimitedFromZeroCopyStream(BTLMessage, &zstream, &clean_eof);
+    return true;
+}
+
 // Constructor
 Sockpeer::Sockpeer(std::string host, int port, bool isServer){
     // Create listen socket at networkObj
@@ -77,8 +100,9 @@ Sockpeer::Sockpeer(std::string host, int port, bool isServer){
         server->set_host(host);
         server->set_port(port);
         server->set_isserver(true);
+        server->set_timestamp(time(NULL));
 
-        // Try to send server info to itself
+        // Send server HostInfo itself
         std::string dataOut = wrapMessage(BTL::MessageType::HOSTINFO, server);
         this->networkObj->networkSend(server->host(), server->port(), dataOut); 
 
@@ -91,7 +115,8 @@ Sockpeer::Sockpeer(std::string host, int port, bool isServer){
             this->connected = false;
             return;
         }
-        printf("Read something from server");
+        // Parse timeStamp?
+        
     }
     this->connected = true;
     return;
@@ -109,45 +134,43 @@ void Sockpeer::run(){
             n = this->networkObj->networkRecv(&serverReply, this->BUFFSIZE, &client_address);
             // Read client info
             std::string clientHost = inet_ntoa(client_address.sin_addr);
-            int clientPort = ntohs(client_address.sin_port);
 
             // Parse message
-            BTL::MessageType * clientMsg = new BTL::MessageType();
-            bool clean_eof = true;
-            std::stringstream stream = std::stringstream(serverReply);
-            google::protobuf::io::IstreamInputStream zstream(&stream);
-            google::protobuf::util::ParseDelimitedFromZeroCopyStream(clientMsg, &zstream, &clean_eof);
-            // std::string messageTypeData = serverReply[1:1+n];
-            // clientMsg->ParseFromString(messageTypeData);
-            std::cout << clientMsg->message() << " " << clientMsg->timestamp() << std::endl;
-            if (clientMsg->message() == BTL::MessageType::CLIENTINFO) {
-                clean_eof = true;
-                BTL::ClientInfo* client = new BTL::ClientInfo();
-                google::protobuf::util::ParseDelimitedFromZeroCopyStream(client, &zstream, &clean_eof);
-                std::cout << client << std::endl;
+            BTL::MessageType clientMsg;
+            google::protobuf::Message* BTLMessage;
+
+            if (parseMessage(&clientMsg, BTLMessage, serverReply) == false){
+                continue;
             }
-            else if (clientMsg->message() == BTL::MessageType::HOSTINFO) {
-                // Parse HostInfo
-                clean_eof = true;
-                BTL::HostInfo* server = new BTL::HostInfo();
-                google::protobuf::util::ParseDelimitedFromZeroCopyStream(server, &zstream, &clean_eof);
-                std::cout << server << std::endl;
-                // Return client HostInfo
-                BTL::HostInfo* client = new BTL::HostInfo();
-                client->set_host(clientHost);
-                client->set_port(clientPort);
-                client->set_isserver(false);
-                std::string dataOut = wrapMessage(BTL::MessageType::HOSTINFO, client);
-                this->networkObj->networkSend(client->host(), client->port(), dataOut); 
+
+            if (clientMsg.message() == BTL::MessageType::CLIENTINFO) {
+
+            }
+            else if (clientMsg.message() == BTL::MessageType::HOSTINFO) {
+                // Parse from client
+                BTL::HostInfo server;
+                server.ParseFromString(BTLMessage->SerializeAsString());
+
+                // Send client HostInfo itself
+                BTL::HostInfo client;
+                client.set_host(clientHost);
+                client.set_port(server.port());
+                client.set_isserver(false);
+                client.set_timestamp(time(NULL));
+                std::string dataOut = wrapMessage(BTL::MessageType::HOSTINFO, &client);
+                this->networkObj->networkSend(client.host(), client.port(), dataOut); 
                 // Done, no need to reply ?
             }
             else {
                 std::cout << "Command not found\n"; 
             }
+            if (BTLMessage) {
+                delete(BTLMessage);
+            }
         }
     }
     else {
-        // ask server 
+        std::cout << "Prepare client\n"; 
     }
     return;
 };

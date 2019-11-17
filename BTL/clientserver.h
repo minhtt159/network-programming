@@ -47,7 +47,8 @@ private:
 protected:
 	// Serialize message
 	std::string wrapMessage(BTL::MessageType::Message msgType, google::protobuf::Message* msgData);
-
+	// Parse message
+	bool parseMessage(BTL::MessageType* internal_MessageType, google::protobuf::Message* BTLMessage, std::string dataIn);
 public:
 	// Return true if connected to network, false otherwise
 	bool connected;

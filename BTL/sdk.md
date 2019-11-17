@@ -24,6 +24,7 @@ message HostInfo {
 	required string host = 1;
 	required uint32 port = 2;
 	required bool isServer = 3;
+	required uint64 timeStamp = 4;
 }
 ```
 Trường này để lưu thông tin của các peer
@@ -33,6 +34,7 @@ Trường này để lưu thông tin của các peer
 |host|thông tin của peer host| |
 |port|thông tin của peer port| |
 |isServer|host này là server hay client| |
+|timeStamp|lần cuối nhận HostInfo| |
 
 ### Client Info:
 ```
@@ -50,15 +52,6 @@ Trường này để lưu thông tin các peer trong mạng tại mỗi client
 |host|thông tin của client host| |
 |port|thông tin của client port| |
 |peer|mảng các HostInfo lưu thông tin các peer| | 
-
-### Common Reply:
-```
-message CommonReply {
-	required uint32 status = 1; 
-}
-```
-Trường này lưu trạng thái đã nhận được thông tin hay chưa ?? Có cần không?
-
 
 ### Message structure:
 

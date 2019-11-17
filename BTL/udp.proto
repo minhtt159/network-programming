@@ -18,17 +18,13 @@ message HostInfo {
 	required string host = 1;
 	required uint32 port = 2;
 	required bool isServer = 3;
+	required uint64 timeStamp = 4;
 }
 
 message ClientInfo {
 	required string host = 1;
 	required uint32 port = 2;
 	repeated HostInfo peer = 3;
-}
-
-message ClientInfoReply {
-	required uint32 status = 1;
-	required uint64 timeStamp = 2;
 }
 
 message FileInfo {
