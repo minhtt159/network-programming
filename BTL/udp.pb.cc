@@ -238,19 +238,19 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_udp_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\tudp.proto\022\003BTL\"\221\001\n\013MessageType\022)\n\007mess"
+  "\n\tudp.proto\022\003BTL\"\241\001\n\013MessageType\022)\n\007mess"
   "age\030\001 \002(\0162\030.BTL.MessageType.Message\022\021\n\tt"
-  "imeStamp\030\002 \002(\004\"D\n\007Message\022\014\n\010HOSTINFO\020\001\022"
-  "\014\n\010FILEINFO\020\002\022\014\n\010FILEDATA\020\003\022\017\n\013COMMONREP"
-  "LY\020\004\"8\n\010HostInfo\022\014\n\004host\030\001 \002(\t\022\014\n\004port\030\002"
-  " \002(\r\022\020\n\010isServer\030\003 \002(\010\"E\n\nClientInfo\022\014\n\004"
-  "host\030\001 \002(\t\022\014\n\004port\030\002 \002(\r\022\033\n\004peer\030\003 \003(\0132\r"
-  ".BTL.HostInfo\"4\n\017ClientInfoReply\022\016\n\006stat"
-  "us\030\001 \002(\r\022\021\n\ttimeStamp\030\002 \002(\004\"*\n\010FileInfo\022"
-  "\014\n\004hash\030\001 \002(\t\022\020\n\010fileName\030\002 \002(\t\":\n\010FileD"
-  "ata\022\020\n\010fileName\030\001 \002(\t\022\016\n\006offset\030\002 \002(\r\022\014\n"
-  "\004data\030\003 \001(\014\"\035\n\013CommonReply\022\016\n\006status\030\001 \002"
-  "(\r"
+  "imeStamp\030\002 \002(\004\"T\n\007Message\022\014\n\010HOSTINFO\020\001\022"
+  "\016\n\nCLIENTINFO\020\002\022\014\n\010FILEINFO\020\003\022\014\n\010FILEDAT"
+  "A\020\004\022\017\n\013COMMONREPLY\020\005\"8\n\010HostInfo\022\014\n\004host"
+  "\030\001 \002(\t\022\014\n\004port\030\002 \002(\r\022\020\n\010isServer\030\003 \002(\010\"E"
+  "\n\nClientInfo\022\014\n\004host\030\001 \002(\t\022\014\n\004port\030\002 \002(\r"
+  "\022\033\n\004peer\030\003 \003(\0132\r.BTL.HostInfo\"4\n\017ClientI"
+  "nfoReply\022\016\n\006status\030\001 \002(\r\022\021\n\ttimeStamp\030\002 "
+  "\002(\004\"*\n\010FileInfo\022\014\n\004hash\030\001 \002(\t\022\020\n\010fileNam"
+  "e\030\002 \002(\t\":\n\010FileData\022\020\n\010fileName\030\001 \002(\t\022\016\n"
+  "\006offset\030\002 \002(\r\022\014\n\004data\030\003 \001(\014\"\035\n\013CommonRep"
+  "ly\022\016\n\006status\030\001 \002(\r"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_udp_2eproto_deps[1] = {
 };
@@ -266,7 +266,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_udp
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_udp_2eproto_once;
 static bool descriptor_table_udp_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_udp_2eproto = {
-  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 482,
+  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 498,
   &descriptor_table_udp_2eproto_once, descriptor_table_udp_2eproto_sccs, descriptor_table_udp_2eproto_deps, 7, 0,
   schemas, file_default_instances, TableStruct_udp_2eproto::offsets,
   file_level_metadata_udp_2eproto, 7, file_level_enum_descriptors_udp_2eproto, file_level_service_descriptors_udp_2eproto,
@@ -285,6 +285,7 @@ bool MessageType_Message_IsValid(int value) {
     case 2:
     case 3:
     case 4:
+    case 5:
       return true;
     default:
       return false;
@@ -293,6 +294,7 @@ bool MessageType_Message_IsValid(int value) {
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
 constexpr MessageType_Message MessageType::HOSTINFO;
+constexpr MessageType_Message MessageType::CLIENTINFO;
 constexpr MessageType_Message MessageType::FILEINFO;
 constexpr MessageType_Message MessageType::FILEDATA;
 constexpr MessageType_Message MessageType::COMMONREPLY;

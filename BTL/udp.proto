@@ -5,9 +5,10 @@ package BTL;
 message MessageType {
 	enum Message {
 		HOSTINFO = 1;
-		FILEINFO = 2;
-		FILEDATA = 3;
-		COMMONREPLY = 4;
+		CLIENTINFO = 2;
+		FILEINFO = 3;
+		FILEDATA = 4;
+		COMMONREPLY = 5;
 	}
 	required Message message = 1;
 	required uint64 timeStamp = 2;

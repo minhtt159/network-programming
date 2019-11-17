@@ -1,5 +1,8 @@
+#include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <cstring>
+#include <ctime>
 #include <errno.h>
 #include <ifaddrs.h>
 #include <sys/socket.h>
@@ -8,7 +11,7 @@
 #include <unistd.h>
 #include "udp.pb.h"     	// Protobuf
 
-void getLocalIP();
+// void getLocalIP();
 
 class Network
 {
@@ -40,6 +43,11 @@ private:
 	BTL::ClientInfo* peers;
 	// buffer size
 	size_t BUFFSIZE;
+
+protected:
+	// Serialize message
+	std::string wrapMessage(BTL::MessageType::Message msgType, google::protobuf::Message* msgData);
+
 public:
 	// Return true if connected to network, false otherwise
 	bool connected;

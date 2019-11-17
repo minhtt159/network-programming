@@ -91,9 +91,10 @@ namespace BTL {
 
 enum MessageType_Message : int {
   MessageType_Message_HOSTINFO = 1,
-  MessageType_Message_FILEINFO = 2,
-  MessageType_Message_FILEDATA = 3,
-  MessageType_Message_COMMONREPLY = 4
+  MessageType_Message_CLIENTINFO = 2,
+  MessageType_Message_FILEINFO = 3,
+  MessageType_Message_FILEDATA = 4,
+  MessageType_Message_COMMONREPLY = 5
 };
 bool MessageType_Message_IsValid(int value);
 constexpr MessageType_Message MessageType_Message_Message_MIN = MessageType_Message_HOSTINFO;
@@ -229,6 +230,8 @@ class MessageType :
   typedef MessageType_Message Message;
   static constexpr Message HOSTINFO =
     MessageType_Message_HOSTINFO;
+  static constexpr Message CLIENTINFO =
+    MessageType_Message_CLIENTINFO;
   static constexpr Message FILEINFO =
     MessageType_Message_FILEINFO;
   static constexpr Message FILEDATA =
