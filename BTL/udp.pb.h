@@ -423,7 +423,6 @@ class HostInfo :
     kHostFieldNumber = 1,
     kPortFieldNumber = 2,
     kIsServerFieldNumber = 3,
-    kTimeStampFieldNumber = 4,
   };
   // required string host = 1;
   bool has_host() const;
@@ -471,19 +470,6 @@ class HostInfo :
   void _internal_set_isserver(bool value);
   public:
 
-  // required uint64 timeStamp = 4;
-  bool has_timestamp() const;
-  private:
-  bool _internal_has_timestamp() const;
-  public:
-  void clear_timestamp();
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp() const;
-  void set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_timestamp() const;
-  void _internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // @@protoc_insertion_point(class_scope:BTL.HostInfo)
  private:
   class _Internal;
@@ -497,7 +483,6 @@ class HostInfo :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr host_;
   ::PROTOBUF_NAMESPACE_ID::uint32 port_;
   bool isserver_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 timestamp_;
   friend struct ::TableStruct_udp_2eproto;
 };
 // -------------------------------------------------------------------
@@ -616,8 +601,8 @@ class ClientInfo :
 
   enum : int {
     kPeerFieldNumber = 3,
-    kHostFieldNumber = 1,
-    kPortFieldNumber = 2,
+    kRemoteHostFieldNumber = 1,
+    kLocalPortFieldNumber = 2,
   };
   // repeated .BTL.HostInfo peer = 3;
   int peer_size() const;
@@ -637,37 +622,37 @@ class ClientInfo :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo >&
       peer() const;
 
-  // required string host = 1;
-  bool has_host() const;
+  // required string remoteHost = 1;
+  bool has_remotehost() const;
   private:
-  bool _internal_has_host() const;
+  bool _internal_has_remotehost() const;
   public:
-  void clear_host();
-  const std::string& host() const;
-  void set_host(const std::string& value);
-  void set_host(std::string&& value);
-  void set_host(const char* value);
-  void set_host(const char* value, size_t size);
-  std::string* mutable_host();
-  std::string* release_host();
-  void set_allocated_host(std::string* host);
+  void clear_remotehost();
+  const std::string& remotehost() const;
+  void set_remotehost(const std::string& value);
+  void set_remotehost(std::string&& value);
+  void set_remotehost(const char* value);
+  void set_remotehost(const char* value, size_t size);
+  std::string* mutable_remotehost();
+  std::string* release_remotehost();
+  void set_allocated_remotehost(std::string* remotehost);
   private:
-  const std::string& _internal_host() const;
-  void _internal_set_host(const std::string& value);
-  std::string* _internal_mutable_host();
+  const std::string& _internal_remotehost() const;
+  void _internal_set_remotehost(const std::string& value);
+  std::string* _internal_mutable_remotehost();
   public:
 
-  // required uint32 port = 2;
-  bool has_port() const;
+  // required uint32 localPort = 2;
+  bool has_localport() const;
   private:
-  bool _internal_has_port() const;
+  bool _internal_has_localport() const;
   public:
-  void clear_port();
-  ::PROTOBUF_NAMESPACE_ID::uint32 port() const;
-  void set_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  void clear_localport();
+  ::PROTOBUF_NAMESPACE_ID::uint32 localport() const;
+  void set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_port() const;
-  void _internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_localport() const;
+  void _internal_set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:BTL.ClientInfo)
@@ -681,8 +666,8 @@ class ClientInfo :
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::BTL::HostInfo > peer_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr host_;
-  ::PROTOBUF_NAMESPACE_ID::uint32 port_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr remotehost_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 localport_;
   friend struct ::TableStruct_udp_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1383,135 +1368,107 @@ inline void HostInfo::set_isserver(bool value) {
   // @@protoc_insertion_point(field_set:BTL.HostInfo.isServer)
 }
 
-// required uint64 timeStamp = 4;
-inline bool HostInfo::_internal_has_timestamp() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool HostInfo::has_timestamp() const {
-  return _internal_has_timestamp();
-}
-inline void HostInfo::clear_timestamp() {
-  timestamp_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00000008u;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 HostInfo::_internal_timestamp() const {
-  return timestamp_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 HostInfo::timestamp() const {
-  // @@protoc_insertion_point(field_get:BTL.HostInfo.timeStamp)
-  return _internal_timestamp();
-}
-inline void HostInfo::_internal_set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00000008u;
-  timestamp_ = value;
-}
-inline void HostInfo::set_timestamp(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:BTL.HostInfo.timeStamp)
-}
-
 // -------------------------------------------------------------------
 
 // ClientInfo
 
-// required string host = 1;
-inline bool ClientInfo::_internal_has_host() const {
+// required string remoteHost = 1;
+inline bool ClientInfo::_internal_has_remotehost() const {
   bool value = (_has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
-inline bool ClientInfo::has_host() const {
-  return _internal_has_host();
+inline bool ClientInfo::has_remotehost() const {
+  return _internal_has_remotehost();
 }
-inline void ClientInfo::clear_host() {
-  host_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void ClientInfo::clear_remotehost() {
+  remotehost_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   _has_bits_[0] &= ~0x00000001u;
 }
-inline const std::string& ClientInfo::host() const {
-  // @@protoc_insertion_point(field_get:BTL.ClientInfo.host)
-  return _internal_host();
+inline const std::string& ClientInfo::remotehost() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfo.remoteHost)
+  return _internal_remotehost();
 }
-inline void ClientInfo::set_host(const std::string& value) {
-  _internal_set_host(value);
-  // @@protoc_insertion_point(field_set:BTL.ClientInfo.host)
+inline void ClientInfo::set_remotehost(const std::string& value) {
+  _internal_set_remotehost(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfo.remoteHost)
 }
-inline std::string* ClientInfo::mutable_host() {
-  // @@protoc_insertion_point(field_mutable:BTL.ClientInfo.host)
-  return _internal_mutable_host();
+inline std::string* ClientInfo::mutable_remotehost() {
+  // @@protoc_insertion_point(field_mutable:BTL.ClientInfo.remoteHost)
+  return _internal_mutable_remotehost();
 }
-inline const std::string& ClientInfo::_internal_host() const {
-  return host_.GetNoArena();
+inline const std::string& ClientInfo::_internal_remotehost() const {
+  return remotehost_.GetNoArena();
 }
-inline void ClientInfo::_internal_set_host(const std::string& value) {
+inline void ClientInfo::_internal_set_remotehost(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+  remotehost_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
 }
-inline void ClientInfo::set_host(std::string&& value) {
+inline void ClientInfo::set_remotehost(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  host_.SetNoArena(
+  remotehost_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:BTL.ClientInfo.host)
+  // @@protoc_insertion_point(field_set_rvalue:BTL.ClientInfo.remoteHost)
 }
-inline void ClientInfo::set_host(const char* value) {
+inline void ClientInfo::set_remotehost(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:BTL.ClientInfo.host)
+  remotehost_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:BTL.ClientInfo.remoteHost)
 }
-inline void ClientInfo::set_host(const char* value, size_t size) {
+inline void ClientInfo::set_remotehost(const char* value, size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  host_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+  remotehost_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:BTL.ClientInfo.host)
+  // @@protoc_insertion_point(field_set_pointer:BTL.ClientInfo.remoteHost)
 }
-inline std::string* ClientInfo::_internal_mutable_host() {
+inline std::string* ClientInfo::_internal_mutable_remotehost() {
   _has_bits_[0] |= 0x00000001u;
-  return host_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return remotehost_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline std::string* ClientInfo::release_host() {
-  // @@protoc_insertion_point(field_release:BTL.ClientInfo.host)
-  if (!has_host()) {
+inline std::string* ClientInfo::release_remotehost() {
+  // @@protoc_insertion_point(field_release:BTL.ClientInfo.remoteHost)
+  if (!has_remotehost()) {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return host_.ReleaseNonDefaultNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return remotehost_.ReleaseNonDefaultNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline void ClientInfo::set_allocated_host(std::string* host) {
-  if (host != nullptr) {
+inline void ClientInfo::set_allocated_remotehost(std::string* remotehost) {
+  if (remotehost != nullptr) {
     _has_bits_[0] |= 0x00000001u;
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  host_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), host);
-  // @@protoc_insertion_point(field_set_allocated:BTL.ClientInfo.host)
+  remotehost_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), remotehost);
+  // @@protoc_insertion_point(field_set_allocated:BTL.ClientInfo.remoteHost)
 }
 
-// required uint32 port = 2;
-inline bool ClientInfo::_internal_has_port() const {
+// required uint32 localPort = 2;
+inline bool ClientInfo::_internal_has_localport() const {
   bool value = (_has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
-inline bool ClientInfo::has_port() const {
-  return _internal_has_port();
+inline bool ClientInfo::has_localport() const {
+  return _internal_has_localport();
 }
-inline void ClientInfo::clear_port() {
-  port_ = 0u;
+inline void ClientInfo::clear_localport() {
+  localport_ = 0u;
   _has_bits_[0] &= ~0x00000002u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::_internal_port() const {
-  return port_;
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::_internal_localport() const {
+  return localport_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::port() const {
-  // @@protoc_insertion_point(field_get:BTL.ClientInfo.port)
-  return _internal_port();
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ClientInfo::localport() const {
+  // @@protoc_insertion_point(field_get:BTL.ClientInfo.localPort)
+  return _internal_localport();
 }
-inline void ClientInfo::_internal_set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void ClientInfo::_internal_set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _has_bits_[0] |= 0x00000002u;
-  port_ = value;
+  localport_ = value;
 }
-inline void ClientInfo::set_port(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _internal_set_port(value);
-  // @@protoc_insertion_point(field_set:BTL.ClientInfo.port)
+inline void ClientInfo::set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_localport(value);
+  // @@protoc_insertion_point(field_set:BTL.ClientInfo.localPort)
 }
 
 // repeated .BTL.HostInfo peer = 3;
