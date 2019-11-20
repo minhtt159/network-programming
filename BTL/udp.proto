@@ -29,6 +29,7 @@ message ClientInfo {
 message FileInfo {
 	required string hash = 1;
 	required string fileName = 2;
+	required uint32 fileSize = 3;
 }
 
 message FileData {
