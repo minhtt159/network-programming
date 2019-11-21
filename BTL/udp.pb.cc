@@ -167,10 +167,12 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_udp_2eproto::offsets[] PROTOBU
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, hash_),
+  PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filehash_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filename_),
+  PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filesize_),
   0,
   1,
+  2,
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -194,9 +196,9 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 0, 7, sizeof(::BTL::MessageType)},
   { 9, 17, sizeof(::BTL::HostInfo)},
   { 20, 28, sizeof(::BTL::ClientInfo)},
-  { 31, 38, sizeof(::BTL::FileInfo)},
-  { 40, 48, sizeof(::BTL::FileData)},
-  { 51, 57, sizeof(::BTL::CommonReply)},
+  { 31, 39, sizeof(::BTL::FileInfo)},
+  { 42, 50, sizeof(::BTL::FileData)},
+  { 53, 59, sizeof(::BTL::CommonReply)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -217,10 +219,10 @@ const char descriptor_table_protodef_udp_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "\030\001 \002(\t\022\014\n\004port\030\002 \002(\r\022\020\n\010isServer\030\003 \002(\010\"P"
   "\n\nClientInfo\022\022\n\nremoteHost\030\001 \002(\t\022\021\n\tloca"
   "lPort\030\002 \002(\r\022\033\n\004peer\030\003 \003(\0132\r.BTL.HostInfo"
-  "\"*\n\010FileInfo\022\014\n\004hash\030\001 \002(\t\022\020\n\010fileName\030\002"
-  " \002(\t\":\n\010FileData\022\020\n\010fileName\030\001 \002(\t\022\016\n\006of"
-  "fset\030\002 \002(\r\022\014\n\004data\030\003 \001(\014\"\035\n\013CommonReply\022"
-  "\016\n\006status\030\001 \002(\r"
+  "\"@\n\010FileInfo\022\020\n\010filehash\030\001 \002(\t\022\020\n\010fileNa"
+  "me\030\002 \002(\t\022\020\n\010fileSize\030\003 \002(\r\":\n\010FileData\022\020"
+  "\n\010fileName\030\001 \002(\t\022\016\n\006offset\030\002 \002(\r\022\014\n\004data"
+  "\030\003 \001(\014\"\035\n\013CommonReply\022\016\n\006status\030\001 \002(\r"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_udp_2eproto_deps[1] = {
 };
@@ -235,7 +237,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_udp
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_udp_2eproto_once;
 static bool descriptor_table_udp_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_udp_2eproto = {
-  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 455,
+  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 477,
   &descriptor_table_udp_2eproto_once, descriptor_table_udp_2eproto_sccs, descriptor_table_udp_2eproto_deps, 6, 0,
   schemas, file_default_instances, TableStruct_udp_2eproto::offsets,
   file_level_metadata_udp_2eproto, 6, file_level_enum_descriptors_udp_2eproto, file_level_service_descriptors_udp_2eproto,
@@ -1140,11 +1142,14 @@ void FileInfo::InitAsDefaultInstance() {
 class FileInfo::_Internal {
  public:
   using HasBits = decltype(std::declval<FileInfo>()._has_bits_);
-  static void set_has_hash(HasBits* has_bits) {
+  static void set_has_filehash(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
   static void set_has_filename(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
+  }
+  static void set_has_filesize(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
   }
 };
 
@@ -1158,21 +1163,23 @@ FileInfo::FileInfo(const FileInfo& from)
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  hash_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_hash()) {
-    hash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.hash_);
+  filehash_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (from._internal_has_filehash()) {
+    filehash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filehash_);
   }
   filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_filename()) {
     filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
   }
+  filesize_ = from.filesize_;
   // @@protoc_insertion_point(copy_constructor:BTL.FileInfo)
 }
 
 void FileInfo::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_FileInfo_udp_2eproto.base);
-  hash_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  filehash_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  filesize_ = 0u;
 }
 
 FileInfo::~FileInfo() {
@@ -1181,7 +1188,7 @@ FileInfo::~FileInfo() {
 }
 
 void FileInfo::SharedDtor() {
-  hash_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  filehash_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   filename_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -1203,12 +1210,13 @@ void FileInfo::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      hash_.ClearNonDefaultToEmptyNoArena();
+      filehash_.ClearNonDefaultToEmptyNoArena();
     }
     if (cached_has_bits & 0x00000002u) {
       filename_.ClearNonDefaultToEmptyNoArena();
     }
   }
+  filesize_ = 0u;
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -1221,10 +1229,10 @@ const char* FileInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required string hash = 1;
+      // required string filehash = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_hash(), ptr, ctx, "BTL.FileInfo.hash");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_filehash(), ptr, ctx, "BTL.FileInfo.filehash");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1232,6 +1240,14 @@ const char* FileInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_filename(), ptr, ctx, "BTL.FileInfo.fileName");
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // required uint32 fileSize = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          _Internal::set_has_filesize(&has_bits);
+          filesize_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1263,14 +1279,14 @@ failure:
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // required string hash = 1;
+  // required string filehash = 1;
   if (cached_has_bits & 0x00000001u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->_internal_hash().data(), static_cast<int>(this->_internal_hash().length()),
+      this->_internal_filehash().data(), static_cast<int>(this->_internal_filehash().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
-      "BTL.FileInfo.hash");
+      "BTL.FileInfo.filehash");
     target = stream->WriteStringMaybeAliased(
-        1, this->_internal_hash(), target);
+        1, this->_internal_filehash(), target);
   }
 
   // required string fileName = 2;
@@ -1281,6 +1297,12 @@ failure:
       "BTL.FileInfo.fileName");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_filename(), target);
+  }
+
+  // required uint32 fileSize = 3;
+  if (cached_has_bits & 0x00000004u) {
+    stream->EnsureSpace(&target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_filesize(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1295,11 +1317,11 @@ size_t FileInfo::RequiredFieldsByteSizeFallback() const {
 // @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.FileInfo)
   size_t total_size = 0;
 
-  if (has_hash()) {
-    // required string hash = 1;
+  if (has_filehash()) {
+    // required string filehash = 1;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_hash());
+        this->_internal_filehash());
   }
 
   if (has_filename()) {
@@ -1309,22 +1331,34 @@ size_t FileInfo::RequiredFieldsByteSizeFallback() const {
         this->_internal_filename());
   }
 
+  if (has_filesize()) {
+    // required uint32 fileSize = 3;
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_filesize());
+  }
+
   return total_size;
 }
 size_t FileInfo::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.FileInfo)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required string hash = 1;
+  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
+    // required string filehash = 1;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_hash());
+        this->_internal_filehash());
 
     // required string fileName = 2;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_filename());
+
+    // required uint32 fileSize = 3;
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_filesize());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -1365,15 +1399,19 @@ void FileInfo::MergeFrom(const FileInfo& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
       _has_bits_[0] |= 0x00000001u;
-      hash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.hash_);
+      filehash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filehash_);
     }
     if (cached_has_bits & 0x00000002u) {
       _has_bits_[0] |= 0x00000002u;
       filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
     }
+    if (cached_has_bits & 0x00000004u) {
+      filesize_ = from.filesize_;
+    }
+    _has_bits_[0] |= cached_has_bits;
   }
 }
 
@@ -1392,7 +1430,7 @@ void FileInfo::CopyFrom(const FileInfo& from) {
 }
 
 bool FileInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
   return true;
 }
 
@@ -1400,10 +1438,11 @@ void FileInfo::InternalSwap(FileInfo* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  hash_.Swap(&other->hash_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+  filehash_.Swap(&other->filehash_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   filename_.Swap(&other->filename_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  swap(filesize_, other->filesize_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata FileInfo::GetMetadata() const {

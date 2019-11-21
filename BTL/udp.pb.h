@@ -785,27 +785,28 @@ class FileInfo :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kHashFieldNumber = 1,
+    kFilehashFieldNumber = 1,
     kFileNameFieldNumber = 2,
+    kFileSizeFieldNumber = 3,
   };
-  // required string hash = 1;
-  bool has_hash() const;
+  // required string filehash = 1;
+  bool has_filehash() const;
   private:
-  bool _internal_has_hash() const;
+  bool _internal_has_filehash() const;
   public:
-  void clear_hash();
-  const std::string& hash() const;
-  void set_hash(const std::string& value);
-  void set_hash(std::string&& value);
-  void set_hash(const char* value);
-  void set_hash(const char* value, size_t size);
-  std::string* mutable_hash();
-  std::string* release_hash();
-  void set_allocated_hash(std::string* hash);
+  void clear_filehash();
+  const std::string& filehash() const;
+  void set_filehash(const std::string& value);
+  void set_filehash(std::string&& value);
+  void set_filehash(const char* value);
+  void set_filehash(const char* value, size_t size);
+  std::string* mutable_filehash();
+  std::string* release_filehash();
+  void set_allocated_filehash(std::string* filehash);
   private:
-  const std::string& _internal_hash() const;
-  void _internal_set_hash(const std::string& value);
-  std::string* _internal_mutable_hash();
+  const std::string& _internal_filehash() const;
+  void _internal_set_filehash(const std::string& value);
+  std::string* _internal_mutable_filehash();
   public:
 
   // required string fileName = 2;
@@ -828,6 +829,19 @@ class FileInfo :
   std::string* _internal_mutable_filename();
   public:
 
+  // required uint32 fileSize = 3;
+  bool has_filesize() const;
+  private:
+  bool _internal_has_filesize() const;
+  public:
+  void clear_filesize();
+  ::PROTOBUF_NAMESPACE_ID::uint32 filesize() const;
+  void set_filesize(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_filesize() const;
+  void _internal_set_filesize(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:BTL.FileInfo)
  private:
   class _Internal;
@@ -838,8 +852,9 @@ class FileInfo :
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr hash_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr filehash_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr filename_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 filesize_;
   friend struct ::TableStruct_udp_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1514,75 +1529,75 @@ ClientInfo::peer() const {
 
 // FileInfo
 
-// required string hash = 1;
-inline bool FileInfo::_internal_has_hash() const {
+// required string filehash = 1;
+inline bool FileInfo::_internal_has_filehash() const {
   bool value = (_has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
-inline bool FileInfo::has_hash() const {
-  return _internal_has_hash();
+inline bool FileInfo::has_filehash() const {
+  return _internal_has_filehash();
 }
-inline void FileInfo::clear_hash() {
-  hash_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void FileInfo::clear_filehash() {
+  filehash_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   _has_bits_[0] &= ~0x00000001u;
 }
-inline const std::string& FileInfo::hash() const {
-  // @@protoc_insertion_point(field_get:BTL.FileInfo.hash)
-  return _internal_hash();
+inline const std::string& FileInfo::filehash() const {
+  // @@protoc_insertion_point(field_get:BTL.FileInfo.filehash)
+  return _internal_filehash();
 }
-inline void FileInfo::set_hash(const std::string& value) {
-  _internal_set_hash(value);
-  // @@protoc_insertion_point(field_set:BTL.FileInfo.hash)
+inline void FileInfo::set_filehash(const std::string& value) {
+  _internal_set_filehash(value);
+  // @@protoc_insertion_point(field_set:BTL.FileInfo.filehash)
 }
-inline std::string* FileInfo::mutable_hash() {
-  // @@protoc_insertion_point(field_mutable:BTL.FileInfo.hash)
-  return _internal_mutable_hash();
+inline std::string* FileInfo::mutable_filehash() {
+  // @@protoc_insertion_point(field_mutable:BTL.FileInfo.filehash)
+  return _internal_mutable_filehash();
 }
-inline const std::string& FileInfo::_internal_hash() const {
-  return hash_.GetNoArena();
+inline const std::string& FileInfo::_internal_filehash() const {
+  return filehash_.GetNoArena();
 }
-inline void FileInfo::_internal_set_hash(const std::string& value) {
+inline void FileInfo::_internal_set_filehash(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  hash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+  filehash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
 }
-inline void FileInfo::set_hash(std::string&& value) {
+inline void FileInfo::set_filehash(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  hash_.SetNoArena(
+  filehash_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:BTL.FileInfo.hash)
+  // @@protoc_insertion_point(field_set_rvalue:BTL.FileInfo.filehash)
 }
-inline void FileInfo::set_hash(const char* value) {
+inline void FileInfo::set_filehash(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  hash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:BTL.FileInfo.hash)
+  filehash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:BTL.FileInfo.filehash)
 }
-inline void FileInfo::set_hash(const char* value, size_t size) {
+inline void FileInfo::set_filehash(const char* value, size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  hash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+  filehash_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:BTL.FileInfo.hash)
+  // @@protoc_insertion_point(field_set_pointer:BTL.FileInfo.filehash)
 }
-inline std::string* FileInfo::_internal_mutable_hash() {
+inline std::string* FileInfo::_internal_mutable_filehash() {
   _has_bits_[0] |= 0x00000001u;
-  return hash_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return filehash_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline std::string* FileInfo::release_hash() {
-  // @@protoc_insertion_point(field_release:BTL.FileInfo.hash)
-  if (!has_hash()) {
+inline std::string* FileInfo::release_filehash() {
+  // @@protoc_insertion_point(field_release:BTL.FileInfo.filehash)
+  if (!has_filehash()) {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return hash_.ReleaseNonDefaultNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return filehash_.ReleaseNonDefaultNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline void FileInfo::set_allocated_hash(std::string* hash) {
-  if (hash != nullptr) {
+inline void FileInfo::set_allocated_filehash(std::string* filehash) {
+  if (filehash != nullptr) {
     _has_bits_[0] |= 0x00000001u;
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  hash_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), hash);
-  // @@protoc_insertion_point(field_set_allocated:BTL.FileInfo.hash)
+  filehash_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), filehash);
+  // @@protoc_insertion_point(field_set_allocated:BTL.FileInfo.filehash)
 }
 
 // required string fileName = 2;
@@ -1654,6 +1669,34 @@ inline void FileInfo::set_allocated_filename(std::string* filename) {
   }
   filename_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), filename);
   // @@protoc_insertion_point(field_set_allocated:BTL.FileInfo.fileName)
+}
+
+// required uint32 fileSize = 3;
+inline bool FileInfo::_internal_has_filesize() const {
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool FileInfo::has_filesize() const {
+  return _internal_has_filesize();
+}
+inline void FileInfo::clear_filesize() {
+  filesize_ = 0u;
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 FileInfo::_internal_filesize() const {
+  return filesize_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 FileInfo::filesize() const {
+  // @@protoc_insertion_point(field_get:BTL.FileInfo.fileSize)
+  return _internal_filesize();
+}
+inline void FileInfo::_internal_set_filesize(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _has_bits_[0] |= 0x00000004u;
+  filesize_ = value;
+}
+inline void FileInfo::set_filesize(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_filesize(value);
+  // @@protoc_insertion_point(field_set:BTL.FileInfo.fileSize)
 }
 
 // -------------------------------------------------------------------

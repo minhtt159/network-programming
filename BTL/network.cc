@@ -17,14 +17,14 @@ Network::Network(int PORT){
     servaddr.sin_addr.s_addr    = INADDR_ANY;   // 0.0.0.0 
     servaddr.sin_port           = htons(PORT);  // PORT
 
-    // // Set socket timeout (5s)
-    // struct timeval tv;
-    // tv.tv_sec = 5;
-    // tv.tv_usec = 0;
-    // if (setsockopt(this->recvfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-    //     std::cout << "Network:Network setsockopt failed\n"; 
-    //     // should return here?
-    // }
+    // // Set socket timeout (1s)
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    if (setsockopt(this->recvfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        std::cout << "Network:Network setsockopt failed\n"; 
+        // should return here?
+    }
 
     // Bind the socket with the server address
     if ( bind(this->recvfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { 

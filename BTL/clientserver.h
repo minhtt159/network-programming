@@ -4,9 +4,11 @@
 #include <cstring>
 #include <ctime>
 #include <poll.h>
+#include <fstream>
 #include <unordered_map>
 #include "udp.pb.h"     	// Protobuf
 #include "network.h"		// Network
+#include "md5.h"			// Hash function
 
 class Sockpeer
 {

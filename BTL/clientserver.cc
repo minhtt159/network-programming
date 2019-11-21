@@ -130,6 +130,7 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
         //     std::cout << x.first << std::endl;
         // }
         // std::cout << "---------\n";
+        // Show client list
         std::cout << "Sockpeer::Sockpeer this client now contains " << this->peers->peer_size() << " peer(s)\n";
         for (auto i: this->peers->peer()){
             printf("%s:%d\n", i.host().c_str(), i.port());
@@ -178,43 +179,75 @@ void Sockpeer::run(){
             break;
         }
         if (ret > 0) {
-            /* Regardless of requested events, poll() can always return these */
-            // if (fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
-            //     printf("Error - poll indicated socket error\n");
-            //     break;
-            // }
-            // if (fds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) {
-            //     printf("Error - poll indicated stdin error\n");
-            //     break;
-            // }
+            // Regardless of requested events, poll() can always return these
+            if (fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
+                printf("Error - poll indicated socket error\n");
+                break;
+            }
+            // Client don't care about fds[1]
+            if (this->isServer and fds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) {
+                printf("Error - poll indicated stdin error\n");
+                break;
+            }
 
-            /* Check if data to read from stdin */
-            if (this->isServer && fds[1].revents & (POLLIN | POLLPRI)) {
+            // Check if data to read from stdin, client don't care about fds[1]
+            if (this->isServer and fds[1].revents & (POLLIN | POLLPRI)) {
                 n = read(0, output_buffer, sizeof(output_buffer));
                 if (n < 0) {
                     printf("Error - stdin error: %s\n", strerror(errno));
                     break;
                 }
 
-                output_buffer[n] = '\x00';
-                // BTL::FileInfo requestedFile;
-                // requestedFile.set_filename(output_buffer);
-                std::cout << output_buffer << std::endl;
+                std::string fileName = std::string(output_buffer, n-1);
                 // Open file
+                std::ifstream is(fileName, std::ifstream::binary);
+                if (!is) {
+                    std::cout << "Sockpeer::run File not found\n";
+                }
+                // get length of file:
+                is.seekg(0, is.end);
+                int length = is.tellg();
+                is.seekg(0, is.beg);
+                // allocate memory:
+                char* buffer = new char[length];
+                // read data as a block:
+                is.read(buffer,length);
+                std::string fileData = std::string(buffer, length);
 
+                std::cout << "Sending " << fileName << " to all client\n";
                 // Calculate hash
+                std::string fileHash = md5(fileData);
+                std::cout << "File hash: " << fileHash << std::endl;
 
+                // Send fileInfo to all client
+                BTL::FileInfo requestedFile;
+                requestedFile.set_filename(fileName);
+                requestedFile.set_filehash(fileHash);
+                requestedFile.set_filesize(length);
+                for (auto peer: this->peers->peer()){
+                    if (!peer.isserver()){
+                        // Send file info to all peer that is not server
+                        std::string dataOut = wrapMessage(BTL::MessageType::FILEINFO, requestedFile);
+                        this->networkObj->networkSend(peer.host(), peer.port(), dataOut);  
+                    }
+                }
+                // Client peer must send requested file info to each other in case packet drop
+
+                // Begin send fileData
+
+                // Hold for more requests
+                // is.close();
             }
 
             /* Check if data to read from socket */
             if (fds[0].revents & (POLLIN | POLLPRI)) {
-                std::cout << "wow, new packet\n";
                 // Recv packet
                 char charData[this->BUFFSIZE];
                 struct sockaddr_in peerAddress;
 
                 n = this->networkObj->networkRecv(charData, this->BUFFSIZE, &peerAddress);
                 if (n == -1){
+                    // Something wrong with the data, ask to send again?
                     continue;
                 }
 
@@ -230,7 +263,8 @@ void Sockpeer::run(){
                 clean_eof = true;
                 
                 if (peerMessageType.message() == BTL::MessageType::HOSTINFO) {
-                    // Some peer is updated to network, try to update if peer is not already
+                    // Some peer is updated to network and (usually) the server send this
+                    // try to update if peer is not already added
                     BTL::HostInfo peer;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
                     
@@ -294,7 +328,7 @@ void Sockpeer::run(){
                         }
                     }
                     
-                    // Add peer's client list to my client list
+                    // Add peer's client list to my client list, skip if already added
                     for (auto peer : peerClientInfo.peer()){
                         peerString = peer.host() + ":";
                         peerString += std::to_string(peer.port());
