@@ -19,10 +19,12 @@ private:
 	BTL::ClientInfo* peers;
 	// buffer size, should I let user decide?
 	size_t BUFFSIZE;
+	int dataSize;
 	//
 	int localPort;
 	//
 	std::unordered_map<std::string, bool> lookup;
+	std::unordered_map<std::string, bool> markFile;
 
 protected:
 	// Serialize message

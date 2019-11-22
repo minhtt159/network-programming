@@ -40,4 +40,5 @@ message FileData {
 
 message CommonReply {
 	required uint32 status = 1; 
+	required uint32 localPort = 2;
 }

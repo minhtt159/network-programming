@@ -1160,6 +1160,7 @@ class CommonReply :
 
   enum : int {
     kStatusFieldNumber = 1,
+    kLocalPortFieldNumber = 2,
   };
   // required uint32 status = 1;
   bool has_status() const;
@@ -1174,14 +1175,31 @@ class CommonReply :
   void _internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
+  // required uint32 localPort = 2;
+  bool has_localport() const;
+  private:
+  bool _internal_has_localport() const;
+  public:
+  void clear_localport();
+  ::PROTOBUF_NAMESPACE_ID::uint32 localport() const;
+  void set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_localport() const;
+  void _internal_set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:BTL.CommonReply)
  private:
   class _Internal;
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 status_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 localport_;
   friend struct ::TableStruct_udp_2eproto;
 };
 // ===================================================================
@@ -1903,6 +1921,34 @@ inline void CommonReply::_internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 va
 inline void CommonReply::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_status(value);
   // @@protoc_insertion_point(field_set:BTL.CommonReply.status)
+}
+
+// required uint32 localPort = 2;
+inline bool CommonReply::_internal_has_localport() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool CommonReply::has_localport() const {
+  return _internal_has_localport();
+}
+inline void CommonReply::clear_localport() {
+  localport_ = 0u;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 CommonReply::_internal_localport() const {
+  return localport_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 CommonReply::localport() const {
+  // @@protoc_insertion_point(field_get:BTL.CommonReply.localPort)
+  return _internal_localport();
+}
+inline void CommonReply::_internal_set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _has_bits_[0] |= 0x00000002u;
+  localport_ = value;
+}
+inline void CommonReply::set_localport(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_localport(value);
+  // @@protoc_insertion_point(field_set:BTL.CommonReply.localPort)
 }
 
 #ifdef __GNUC__

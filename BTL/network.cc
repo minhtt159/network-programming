@@ -3,7 +3,7 @@
 // Constructor create listening socket recvfd at PORT
 Network::Network(int PORT, int BUFFER){
     // sysctl net.inet.udp.maxdgram
-    this->BUFFSIZE = 9216 * 4; // for kernel to breath
+    this->BUFFSIZE = 128*1024; // for kernel to breath
     // Create recvfd
     if ( (this->recvfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
         std::cout<< "Network::Network socket creation failed\n"; 
@@ -63,7 +63,7 @@ size_t Network::networkSend(std::string HOST, int PORT, std::string BUFFER) {
     // Send BUFFER to SERVER, no MSG
     size_t n = sendto(sendfd, charBUFF, sizeof(charBUFF), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
     close(sendfd);
-    printf("%lu\n",n);
+    // printf("%lu\n",n);
     return n;
 };
 
@@ -84,7 +84,7 @@ size_t Network::networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT)
     memset(BUFFER, 0, BUFFSIZE);
     // Recv charBUFF with maximum BUFFSIZE, should MSG_WAITALL? 
     size_t n = recvfrom(this->recvfd, BUFFER, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
-    printf("%lu\n",n);
+    // printf("%lu\n",n);
     return n;
 };
 
