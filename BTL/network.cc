@@ -74,10 +74,13 @@ size_t Network::networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT)
         std::cout << "Network:networkRecv recvfd not initialized";
         return false;
     }
-    if (setsockopt(this->recvfd, SOL_SOCKET, SO_RCVBUF, &this->BUFFSIZE, sizeof(this->BUFFSIZE)) < 0) {
-        std::cout << "Network:networkRecv setsockopt failed\n";
-        return false;
-    }
+    
+    // net.inet.udp.maxdgram: 9216
+    // if (setsockopt(this->recvfd, SOL_SOCKET, SO_RCVBUF, &this->BUFFSIZE, sizeof(this->BUFFSIZE)) < 0) {
+    //     std::cout << "Network:networkRecv setsockopt failed\n";
+    //     return false;
+    // }
+
     // Clear client socket address information
     socklen_t clientLength = sizeof(*CLIENT);
     memset(CLIENT, 0, clientLength);

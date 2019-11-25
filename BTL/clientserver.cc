@@ -4,7 +4,7 @@
 // Some inline helper function
 std::string string_to_hex(const std::string& input)
 {
-    static const char* const lut = "0123456789ABCDEF";
+    static const char* const lut = "0123456789abcdef";
     size_t len = input.length();
 
     std::string output;
@@ -36,8 +36,8 @@ std::string Sockpeer::wrapMessage(BTL::MessageType::Message msgType, google::pro
 
 Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool isServer){
     // BUFFSIZE, should I let user decide?
-    this->BUFFSIZE   = 8*1024; // 8KB for testing 
-    this->dataSize   = 4*1024; // dataSize per packet, IDK why :/ 
+    this->BUFFSIZE   = 1460;    // MTU default 
+    this->dataSize   = 1350;    // Plenty of space for header
 
     // Create listen socket at networkObj
     this->networkObj = new Network(localPort, this->BUFFSIZE);
@@ -153,6 +153,7 @@ void Sockpeer::run(){
     std::ifstream is;
     std::ofstream os;
 
+    // File transfer helper variables
     std::string fileName = "";
     std::string fileHash = "";
     int fileSize = 0;
@@ -163,10 +164,9 @@ void Sockpeer::run(){
     if (this->isServer){
         // Server print listed files
 
-        /* Descriptor zero is stdin */
         fds[0].fd = this->networkObj->recvfd;
         fds[0].events = POLLIN | POLLPRI;
-
+        // fd = 0 (stdin)
         fds[1].fd = 0;
         fds[1].events = POLLIN | POLLPRI;
     }
@@ -175,6 +175,7 @@ void Sockpeer::run(){
         fds[0].fd = this->networkObj->recvfd;
         fds[0].events = POLLIN | POLLPRI;
     }
+    
     // Normally we'd check an exit condition, but for this example we loop endlessly.
     while (true) {
         int ret = 0;
