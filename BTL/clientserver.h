@@ -20,7 +20,7 @@
 #include "udp.pb.h"     	// Protobuf
 #include "network.h"		// Network
 #include "md5.h"			// Hash function
-#include "thread_helper.h"	// Multi thread
+// #include "thread_helper.h"	// Multi thread
 
 
 class Sockpeer
@@ -37,7 +37,7 @@ private:
 	int localPort;
 	// peer lookup map
 	std::unordered_map<std::string, bool> lookup;
-	//
+	// mark if peer is done
 	std::unordered_map<std::string, bool> markFile;
 
 protected:

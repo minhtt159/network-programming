@@ -157,8 +157,9 @@ void Sockpeer::run(){
     std::string fileHash = "";
     int fileSize = 0;
     int block_count;
-    std::string blockMark = "";
-    std::string blockDone = "";
+    static std::string blockMark = "";
+    static std::string blockDone = "";
+    static char* fileBuffer;
 
     if (this->isServer){
         // Server print listed files
@@ -223,12 +224,12 @@ void Sockpeer::run(){
 
                 if (fileHandle < 0) {
                     // Open file failed, print error
-                    printf("Sockpeer::run Open file failed, error: %d\n", strerror(errno));
+                    printf("Sockpeer::run Open file failed, error: %s\n", strerror(errno));
                     continue;
                 }
 
                 /* Advise the kernel of our access pattern.  */
-                posix_fadvise(fileHandle, 0, 0, 1);  // FDADVICE_SEQUENTIAL
+                // posix_fadvise(fileHandle, 0, 0, 1);  // FDADVICE_SEQUENTIAL
 
                 // obtain file size
                 struct stat sb;
@@ -237,14 +238,17 @@ void Sockpeer::run(){
                 printf("Sockpeer::run Server sending \"%s\" to all clients\n", fileName.c_str());
                 
                 // Allocate memory
-                char buffer[fileSize+1];
-                if (fileSize != read(fileHandle, buffer, fileSize)) {
-                    printf("Sockpeer::run Can't read file to calculate hash\n");
+                fileBuffer = (char *)mmap(0, fileSize, PROT_READ, MAP_SHARED, fileHandle, 0);
+                // if (fileSize != read(fileHandle, buffer, fileSize)) {
+                //     printf("Sockpeer::run Can't read file to calculate hash\n");
+                // }
 
-                }
+                // printf("fileSize: %d\n",fileSize);
+                // printf("");
 
+                std::string rawData = std::string(fileBuffer, fileSize);
                 // Calculate hash - this might slow bcuz C++ :shrug:
-                fileHash = md5(std::string(buffer, fileSize));
+                fileHash = md5(rawData);
                 printf("Sockpeer::run File hash: %s\n", fileHash.c_str());
 
                 // Send fileInfo to all client
@@ -268,7 +272,7 @@ void Sockpeer::run(){
                     // Prepare information
                     int offset = block_count * this->dataSize;
                     int read_length = (fileSize - offset) < this->dataSize ? (fileSize - offset) : this->dataSize;
-                    std::string rawData = std::string(buffer + offset, read_length);
+                    std::string rawData = std::string(fileBuffer + offset, read_length);
 
                     // Prepare fileData object
                     BTL::FileData fileData;
@@ -279,16 +283,18 @@ void Sockpeer::run(){
                     std::cout << md5(rawData) << " " << rawData.length() << " " << std::endl;
 
                     // 1-server config
-                    BTL::HostInfo peer = this->peers->peer(i % this->peers->peer_size()); 
+                    BTL::HostInfo peer = this->peers->peer(block_count % this->peers->peer_size()); 
                     this->networkObj->networkSend(peer.host(), peer.port(), dataOut);
-                    printf("Sending block: %d to %s:%d\n", i, peer.host(), peer.port());
+                    printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
                     block_count += 1;
                 }
 
-                // // mark that all file is not done
-                // for (auto x = lookup.begin(); x != lookup.end(); x++){
-                //     markFile[x->first] = false;
-                // }
+                // mark that all clients is not done
+                for (auto peer: this->peers->peer()){
+                    std::string whichOne = peer.host() + ":";
+                    whichOne += peer.port();
+                    markFile[whichOne] = false;
+                }
 
                 // // Hold for more requests
                 std::cout << "Initial send done\n";
@@ -405,10 +411,14 @@ void Sockpeer::run(){
                     }
                 }
                 else if (peerMessageType.message() == BTL::MessageType::FILEINFO){
+                    // Server should not read this message
+                    if (this->isServer){
+                        printf("Err?\n");
+                        continue;
+                    }
                     // One file at a time 
-                    if (this->isServer and fileHandle == -1){
-
-                        std::cout << "Sockpeer::run this client already open ofstream\n";
+                    if (fileHandle != -1){
+                        printf("Sockpeer::run this client already open ofstream\n");
                         continue;
                     }
 
@@ -428,8 +438,15 @@ void Sockpeer::run(){
                     memset(buffer, '0', block_count);
                     blockDone = std::string(buffer, block_count);
 
-                    os.open(fileName, std::ofstream::binary);
-                    std::cout << "Sockpeer::run open " << fileName << std::endl;
+                    fileHandle = open(fileName.c_str(), O_RDWR | O_CREAT, (mode_t)0600);
+                    if (ftruncate(fileHandle, fileSize) != 0){
+                        printf("Sockpeer::run file trucate failed: %s\n", strerror(errno));
+                        close(fileHandle);
+                        continue;
+                    }
+                    fileBuffer = (char *)mmap(0, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED, fileHandle, 0);
+                    // os.open(fileName, std::ofstream::binary);
+                    printf("Sockpeer::run Client open %s\n", fileName.c_str());
                     // Mark time begin
 
                     // Bounce this message to other client
@@ -451,14 +468,15 @@ void Sockpeer::run(){
                         continue;
                     }
 
+                    memcpy(fileBuffer + fileData.offset(), fileData.data().c_str(), fileData.data().length());
                     // Write rawData to buffer
-                    os.seekp(fileData.offset());
+                    // os.seekp(fileData.offset());
                     // os << fileData.data();
-                    os.write(fileData.data().c_str(), fileData.data().length());
+                    // os.write(fileData.data().c_str(), fileData.data().length());
 
                     // std::cout << fileData.data().length() << " " << md5(fileData.data()) << std::endl;
                     // std::cout << fileData.data().length()+fileData.offset() << " " << fileSize << std::endl;
-                    std::cout << "Sockpeer::run writing " << fileData.data().length() << " bytes at block " << block_i << std::endl;
+                    printf("Sockpeer::run writing %lu bytes at block %d\n", fileData.data().length(), block_i);
                     
                     // Bounce back to other client
                     for (auto peer: this->peers->peer()){
@@ -474,7 +492,7 @@ void Sockpeer::run(){
 
                     if (blockDone.compare(blockMark) == 0){
                         std::cout << "Sockpeer::run Received all\n";
-                        os.close();
+                        close(fileHandle);
                         // Send done to server, MARK: 1-server topo
                         for (auto peer: this->peers->peer()){
                             if (peer.isserver()){
@@ -491,45 +509,44 @@ void Sockpeer::run(){
                     BTL::CommonReply reply;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&reply, &zstream, &clean_eof);
 
-                    if (this->isServer) {
-                        // When server received this message, some client is asking for some block
-                        if (reply.status() == -1){
-                            std::string whichOne = peerHost + ":";
-                            whichOne += std::to_string(reply.localport());
-                            markFile[whichOne] = true;
+                    if (this->isServer and reply.status() == -1) {
+                        // Done message
+                        std::string whichOne = peerHost + ":";
+                        whichOne += std::to_string(reply.localport());
+                        markFile[whichOne] = true;
 
-                            // if all file is mark true, break
-                            bool isDone = true;
-                            for (auto x = lookup.begin(); x != lookup.end(); x++){
-                                if (markFile[x->first] == false){
-                                    isDone = false;
-                                    break;
-                                }
-                            }
-                            if (isDone){
+                        // If all clients is mark true, break
+                        bool isDone = true;
+                        for (auto x = lookup.begin(); x != lookup.end(); x++){
+                            if (markFile[x->first] == false){
+                                isDone = false;
                                 break;
                             }
-                            continue;
                         }
-                        // 
+                        if (isDone){
+                            break;
+                        }
+                        continue;
                     }
                     // When peer received this message, other peer is requesting for some block
-                    if (blockMark[reply.status()] == '1' and this->isServer == false){
+                    else if (!this->isServer and blockMark[reply.status()] == '1'){
                         // Block is not written, skip
                         continue;
                     }
-                    char buffer[this->dataSize];
+                    printf("Sockpeer::run Client %s is asking for block %d\n", peerHost.c_str(), reply.status());
+
+                    // char buffer[this->dataSize];
                     int block_i = reply.status();
-                    int read_length = (fileSize - block_i*this->dataSize) < this->dataSize ? (fileSize - block_i*this->dataSize) : this->dataSize;
-                    std::ifstream tmp_is(fileName, std::ifstream::binary);
-                    tmp_is.seekg(reply.status());
-                    tmp_is.read(buffer, read_length);
-                    tmp_is.close();
+                    int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
+                    // std::ifstream tmp_is(fileName, std::ifstream::binary);
+                    // tmp_is.seekg(reply.status());
+                    // tmp_is.read(buffer, read_length);
+                    // tmp_is.close();
                     // Prepare data
                     BTL::FileData fileData;
                     fileData.set_filename(fileName);
-                    fileData.set_offset(reply.status());
-                    fileData.set_data(std::string(buffer, read_length));
+                    fileData.set_offset(block_i * this->dataSize);
+                    fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
                     // Send to that client
                     dataOut = wrapMessage(BTL::MessageType::FILEDATA, &fileData);
                     this->networkObj->networkSend(peerHost, reply.localport(), dataOut);
@@ -539,8 +556,11 @@ void Sockpeer::run(){
                 }
             }
         }
+        if (this->isServer) {
+            continue;
+        }
         // ask all peer for non written block
-        if (os.is_open() and this->isServer == false){
+        if (fileHandle != -1){
             int block_i;
             for (block_i=0; block_i<block_count; block_i++){
                 if (blockMark[block_i] == '1'){
@@ -548,9 +568,9 @@ void Sockpeer::run(){
                 }
             }
             if (block_i == block_count){
-                // All block written? why os not close?
-                os.close();
-                std::cout << "Sockpeer::run::random Exception here\n";
+                // All block written?
+                std::cout << "Sockpeer::run:: File transfer is complete\n";
+                break;
             }
             // Ask server for block_i
             BTL::CommonReply reply;
@@ -559,7 +579,7 @@ void Sockpeer::run(){
             dataOut = wrapMessage(BTL::MessageType::COMMONREPLY, &reply);
 
             for (auto peer: this->peers->peer()){
-                if (time(NULL) % 2 == 0)
+                // if (time(NULL) % 2 == 0)
                 this->networkObj->networkSend(peer.host(), peer.port(), dataOut);
             }
         }

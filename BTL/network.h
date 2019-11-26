@@ -1,3 +1,6 @@
+#ifndef GRANDPARENT_H
+#define GRANDPARENT_H
+
 #include <iostream>
 #include <stdio.h>
 #include <errno.h>
@@ -24,3 +27,5 @@ public:
 	// Destructor
 	~Network();
 };
+
+#endif /* !GRANDPARENT_H */
