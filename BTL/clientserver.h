@@ -1,16 +1,27 @@
-#include <iostream>			// C++
-#include <stdio.h>			// C
-#include <sstream>			// String stream
-#include <fstream>			// File stream
-#include <cstring>			// C String
-#include <ctime>			// Time library
-#include <poll.h>			// Listen on file descriptor events
+// C & C++
+#include <iostream>
+#include <stdio.h>
+// Stream & string
+#include <sstream>
+#include <fstream>
+#include <cstring>
+// Time
+#include <ctime>
+// Error
+#include <errno.h>
+// Listen on file descriptor events
+#include <poll.h>
+// Map pages of memory
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <unordered_map>	// Map for marker
-#include <sys/mman.h>		// Map file to memory
 #include "udp.pb.h"     	// Protobuf
 #include "network.h"		// Network
 #include "md5.h"			// Hash function
 #include "thread_helper.h"	// Multi thread
+
 
 class Sockpeer
 {
@@ -22,10 +33,11 @@ private:
 	// buffer size, should I let user decide?
 	size_t BUFFSIZE;
 	size_t dataSize;
-	//
+	// localPort for networkObj->send
 	int localPort;
-	//
+	// peer lookup map
 	std::unordered_map<std::string, bool> lookup;
+	//
 	std::unordered_map<std::string, bool> markFile;
 
 protected:

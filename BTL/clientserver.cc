@@ -150,8 +150,7 @@ void Sockpeer::run(){
     // Create 2 poll for socket and stdin
     struct pollfd fds[2];
     // Stream for reading / writing files
-    std::ifstream is;
-    std::ofstream os;
+    int fileHandle = -1;
 
     // File transfer helper variables
     std::string fileName = "";
@@ -211,32 +210,42 @@ void Sockpeer::run(){
                     break;
                 }
 
-                if (is.is_open()){
-                    std::cout << "Some file is pending, wait for client to response\n";
+                if (fileHandle != -1){
+                    printf("Some file is pending, wait for client to response\n");
                     continue;
                 }
 
+                // Parse file name
                 fileName = std::string(output_buffer, n-1);
+
                 // Open file
-                is.open(fileName, std::ifstream::binary);
+                fileHandle = open(fileName.c_str(), O_RDONLY);
 
-                if (!is) {
-                    std::cout << "Sockpeer::run File not found\n";
+                if (fileHandle < 0) {
+                    // Open file failed, print error
+                    printf("Sockpeer::run Open file failed, error: %d\n", strerror(errno));
+                    continue;
                 }
-                // Get length of file
-                is.seekg(0, is.end);
-                fileSize = is.tellg();
-                is.seekg(0, is.beg);
-                // Allocate memory
-                char* buffer = new char[fileSize];
-                // Read data as a block
-                is.read(buffer, fileSize);
-                std::string fileData = std::string(buffer, fileSize);
 
-                std::cout << "Sending " << fileName << " to all client\n";
-                // Calculate hash
-                fileHash = md5(fileData);
-                std::cout << "File hash: " << fileHash << std::endl;
+                /* Advise the kernel of our access pattern.  */
+                posix_fadvise(fileHandle, 0, 0, 1);  // FDADVICE_SEQUENTIAL
+
+                // obtain file size
+                struct stat sb;
+                fstat(fileHandle, &sb);
+                fileSize = sb.st_size;
+                printf("Sockpeer::run Server sending \"%s\" to all clients\n", fileName.c_str());
+                
+                // Allocate memory
+                char buffer[fileSize+1];
+                if (fileSize != read(fileHandle, buffer, fileSize)) {
+                    printf("Sockpeer::run Can't read file to calculate hash\n");
+
+                }
+
+                // Calculate hash - this might slow bcuz C++ :shrug:
+                fileHash = md5(std::string(buffer, fileSize));
+                printf("Sockpeer::run File hash: %s\n", fileHash.c_str());
 
                 // Send fileInfo to all client
                 BTL::FileInfo requestedFile;
@@ -251,41 +260,37 @@ void Sockpeer::run(){
                     }
                 }
                 // Client peer must send requested file info to each other in case packet drop
-                if (buffer) {
-                    delete [] buffer;
-                }
+
                 // Begin send fileData
-                buffer = new char[this->dataSize];
-                block_count = (fileSize/this->dataSize) + 1;
-                int offset, read_length;
-                for (int i=0; i<block_count; i++){
-                    // Read data to buffer
-                    offset = this->dataSize * i;
-                    read_length = (fileSize - offset) < this->dataSize ? (fileSize - offset) : this->dataSize;
-                    if (read_length == 0) {
-                        continue;
-                    }
-                    is.seekg(offset);
-                    memset(buffer, 0, this->dataSize);
-                    is.read(buffer, read_length);
+                block_count = 0;
+
+                while ((block_count * this->dataSize) < fileSize){
+                    // Prepare information
+                    int offset = block_count * this->dataSize;
+                    int read_length = (fileSize - offset) < this->dataSize ? (fileSize - offset) : this->dataSize;
+                    std::string rawData = std::string(buffer + offset, read_length);
+
                     // Prepare fileData object
                     BTL::FileData fileData;
                     fileData.set_filename(fileName);
                     fileData.set_offset(offset);
-                    std::string rawData = std::string(buffer, read_length);
                     fileData.set_data(rawData);
                     dataOut = wrapMessage(BTL::MessageType::FILEDATA, &fileData);
-                    // std::cout << md5(rawData) << " " << rawData.length() << " " << std::endl;
+                    std::cout << md5(rawData) << " " << rawData.length() << " " << std::endl;
+
                     // 1-server config
                     BTL::HostInfo peer = this->peers->peer(i % this->peers->peer_size()); 
                     this->networkObj->networkSend(peer.host(), peer.port(), dataOut);
-                    std::cout << "Sending block: " << i << " to " << peer.host() << ":" << peer.port() << std::endl;
+                    printf("Sending block: %d to %s:%d\n", i, peer.host(), peer.port());
+                    block_count += 1;
                 }
-                // mark that all file is not done
-                for (auto x = lookup.begin(); x != lookup.end(); x++){
-                    markFile[x->first] = false;
-                }
-                // Hold for more requests
+
+                // // mark that all file is not done
+                // for (auto x = lookup.begin(); x != lookup.end(); x++){
+                //     markFile[x->first] = false;
+                // }
+
+                // // Hold for more requests
                 std::cout << "Initial send done\n";
             }
 
@@ -361,7 +366,7 @@ void Sockpeer::run(){
                         this->peers->set_remotehost(peerHost);
                         this->peers->set_localport(this->localPort);
                         std::string dataOut = wrapMessage(BTL::MessageType::CLIENTINFO, this->peers);
-                        this->networkObj->networkSend(peerHost, peerClientInfo.localport(), dataOut);
+                        this->networkObj->networkSend(peerHost, sender->port(), dataOut);
 
                         // Send peer HostInfo to all of my other client
                         for (auto mypeer : this->peers->peer()){
@@ -400,8 +405,9 @@ void Sockpeer::run(){
                     }
                 }
                 else if (peerMessageType.message() == BTL::MessageType::FILEINFO){
-                    // One file at a time?
-                    if (os.is_open()){
+                    // One file at a time 
+                    if (this->isServer and fileHandle == -1){
+
                         std::cout << "Sockpeer::run this client already open ofstream\n";
                         continue;
                     }

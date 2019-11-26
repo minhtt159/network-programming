@@ -105,7 +105,7 @@ Tất cả các message gửi lên server sẽ có cấu trúc như sau
 ### Tham khảo:
 
 https://stackoverflow.com/questions/14998261/2-way-udp-chat-application
-
+https://stackoverflow.com/questions/17925051/fast-textfile-reading-in-c
 
 
 
