@@ -33,6 +33,8 @@ private:
 	// buffer size, should I let user decide?
 	size_t BUFFSIZE;
 	size_t dataSize;
+	// time
+	time_t startTime;
 	// localPort for networkObj->send
 	int localPort;
 	// peer lookup map
