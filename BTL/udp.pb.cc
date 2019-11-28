@@ -131,38 +131,31 @@ static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptor
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_udp_2eproto = nullptr;
 
 const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_udp_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::BTL::MessageType, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::MessageType, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::BTL::MessageType, message_),
-  PROTOBUF_FIELD_OFFSET(::BTL::MessageType, timestamp_),
-  1,
-  0,
-  PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::BTL::MessageType, localport_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, host_),
   PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, port_),
-  PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, isserver_),
-  0,
-  1,
-  2,
-  PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::BTL::HostInfo, isseeder_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, remotehost_),
   PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, localport_),
-  PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, peer_),
-  0,
-  1,
-  ~0u,
-  PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, isseeder_),
+  PROTOBUF_FIELD_OFFSET(::BTL::ClientInfo, peers_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -170,10 +163,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_udp_2eproto::offsets[] PROTOBU
   PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filehash_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filename_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileInfo, filesize_),
-  0,
-  1,
-  2,
-  PROTOBUF_FIELD_OFFSET(::BTL::FileData, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -181,26 +171,21 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_udp_2eproto::offsets[] PROTOBU
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, filename_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, offset_),
   PROTOBUF_FIELD_OFFSET(::BTL::FileData, data_),
-  0,
-  2,
-  1,
-  PROTOBUF_FIELD_OFFSET(::BTL::CommonReply, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::BTL::CommonReply, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::BTL::CommonReply, status_),
   PROTOBUF_FIELD_OFFSET(::BTL::CommonReply, localport_),
-  0,
-  1,
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 7, sizeof(::BTL::MessageType)},
-  { 9, 17, sizeof(::BTL::HostInfo)},
-  { 20, 28, sizeof(::BTL::ClientInfo)},
-  { 31, 39, sizeof(::BTL::FileInfo)},
-  { 42, 50, sizeof(::BTL::FileData)},
-  { 53, 60, sizeof(::BTL::CommonReply)},
+  { 0, -1, sizeof(::BTL::MessageType)},
+  { 7, -1, sizeof(::BTL::HostInfo)},
+  { 15, -1, sizeof(::BTL::ClientInfo)},
+  { 24, -1, sizeof(::BTL::FileInfo)},
+  { 32, -1, sizeof(::BTL::FileData)},
+  { 40, -1, sizeof(::BTL::CommonReply)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -214,18 +199,19 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 
 const char descriptor_table_protodef_udp_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\tudp.proto\022\003BTL\"\241\001\n\013MessageType\022)\n\007mess"
-  "age\030\001 \002(\0162\030.BTL.MessageType.Message\022\021\n\tt"
-  "imeStamp\030\002 \002(\004\"T\n\007Message\022\014\n\010HOSTINFO\020\001\022"
-  "\016\n\nCLIENTINFO\020\002\022\014\n\010FILEINFO\020\003\022\014\n\010FILEDAT"
-  "A\020\004\022\017\n\013COMMONREPLY\020\005\"8\n\010HostInfo\022\014\n\004host"
-  "\030\001 \002(\t\022\014\n\004port\030\002 \002(\r\022\020\n\010isServer\030\003 \002(\010\"P"
-  "\n\nClientInfo\022\022\n\nremoteHost\030\001 \002(\t\022\021\n\tloca"
-  "lPort\030\002 \002(\r\022\033\n\004peer\030\003 \003(\0132\r.BTL.HostInfo"
-  "\"@\n\010FileInfo\022\020\n\010filehash\030\001 \002(\t\022\020\n\010fileNa"
-  "me\030\002 \002(\t\022\020\n\010fileSize\030\003 \002(\r\":\n\010FileData\022\020"
-  "\n\010fileName\030\001 \002(\t\022\016\n\006offset\030\002 \002(\r\022\014\n\004data"
-  "\030\003 \001(\014\"0\n\013CommonReply\022\016\n\006status\030\001 \002(\r\022\021\n"
-  "\tlocalPort\030\002 \002(\r"
+  "age\030\001 \001(\0162\030.BTL.MessageType.Message\022\021\n\tl"
+  "ocalPort\030\002 \001(\r\"T\n\007Message\022\014\n\010HOSTINFO\020\000\022"
+  "\016\n\nCLIENTINFO\020\001\022\014\n\010FILEINFO\020\002\022\014\n\010FILEDAT"
+  "A\020\003\022\017\n\013COMMONREPLY\020\004\"8\n\010HostInfo\022\014\n\004host"
+  "\030\001 \001(\t\022\014\n\004port\030\002 \001(\r\022\020\n\010isSeeder\030\003 \001(\010\"c"
+  "\n\nClientInfo\022\022\n\nremoteHost\030\001 \001(\t\022\021\n\tloca"
+  "lPort\030\002 \001(\r\022\020\n\010isSeeder\030\003 \001(\010\022\034\n\005peers\030\004"
+  " \003(\0132\r.BTL.HostInfo\"@\n\010FileInfo\022\020\n\010fileh"
+  "ash\030\001 \001(\t\022\020\n\010fileName\030\002 \001(\t\022\020\n\010fileSize\030"
+  "\003 \001(\r\":\n\010FileData\022\020\n\010fileName\030\001 \001(\t\022\016\n\006o"
+  "ffset\030\002 \001(\r\022\014\n\004data\030\003 \001(\014\"0\n\013CommonReply"
+  "\022\016\n\006status\030\001 \001(\r\022\021\n\tlocalPort\030\002 \001(\rb\006pro"
+  "to3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_udp_2eproto_deps[1] = {
 };
@@ -240,7 +226,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_udp
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_udp_2eproto_once;
 static bool descriptor_table_udp_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_udp_2eproto = {
-  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 496,
+  &descriptor_table_udp_2eproto_initialized, descriptor_table_protodef_udp_2eproto, "udp.proto", 523,
   &descriptor_table_udp_2eproto_once, descriptor_table_udp_2eproto_sccs, descriptor_table_udp_2eproto_deps, 6, 0,
   schemas, file_default_instances, TableStruct_udp_2eproto::offsets,
   file_level_metadata_udp_2eproto, 6, file_level_enum_descriptors_udp_2eproto, file_level_service_descriptors_udp_2eproto,
@@ -255,11 +241,11 @@ const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageType_Message_descriptor() 
 }
 bool MessageType_Message_IsValid(int value) {
   switch (value) {
+    case 0:
     case 1:
     case 2:
     case 3:
     case 4:
-    case 5:
       return true;
     default:
       return false;
@@ -283,13 +269,6 @@ void MessageType::InitAsDefaultInstance() {
 }
 class MessageType::_Internal {
  public:
-  using HasBits = decltype(std::declval<MessageType>()._has_bits_);
-  static void set_has_message(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
-  static void set_has_timestamp(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
 };
 
 MessageType::MessageType()
@@ -299,18 +278,18 @@ MessageType::MessageType()
 }
 MessageType::MessageType(const MessageType& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&timestamp_, &from.timestamp_,
-    static_cast<size_t>(reinterpret_cast<char*>(&message_) -
-    reinterpret_cast<char*>(&timestamp_)) + sizeof(message_));
+  ::memcpy(&message_, &from.message_,
+    static_cast<size_t>(reinterpret_cast<char*>(&localport_) -
+    reinterpret_cast<char*>(&message_)) + sizeof(localport_));
   // @@protoc_insertion_point(copy_constructor:BTL.MessageType)
 }
 
 void MessageType::SharedCtor() {
-  timestamp_ = PROTOBUF_ULONGLONG(0);
-  message_ = 1;
+  ::memset(&message_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&localport_) -
+      reinterpret_cast<char*>(&message_)) + sizeof(localport_));
 }
 
 MessageType::~MessageType() {
@@ -336,40 +315,31 @@ void MessageType::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    timestamp_ = PROTOBUF_ULONGLONG(0);
-    message_ = 1;
-  }
-  _has_bits_.Clear();
+  ::memset(&message_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&localport_) -
+      reinterpret_cast<char*>(&message_)) + sizeof(localport_));
   _internal_metadata_.Clear();
 }
 
 const char* MessageType::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required .BTL.MessageType.Message message = 1;
+      // .BTL.MessageType.Message message = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
-          if (PROTOBUF_PREDICT_TRUE(::BTL::MessageType_Message_IsValid(val))) {
-            _internal_set_message(static_cast<::BTL::MessageType_Message>(val));
-          } else {
-            ::PROTOBUF_NAMESPACE_ID::internal::WriteVarint(1, val, mutable_unknown_fields());
-          }
+          _internal_set_message(static_cast<::BTL::MessageType_Message>(val));
         } else goto handle_unusual;
         continue;
-      // required uint64 timeStamp = 2;
+      // uint32 localPort = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_timestamp(&has_bits);
-          timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          localport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -386,7 +356,6 @@ const char* MessageType::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -400,18 +369,17 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required .BTL.MessageType.Message message = 1;
-  if (cached_has_bits & 0x00000002u) {
+  // .BTL.MessageType.Message message = 1;
+  if (this->message() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
       1, this->_internal_message(), target);
   }
 
-  // required uint64 timeStamp = 2;
-  if (cached_has_bits & 0x00000001u) {
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
     stream->EnsureSpace(&target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_timestamp(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_localport(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -422,45 +390,26 @@ failure:
   return target;
 }
 
-size_t MessageType::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.MessageType)
-  size_t total_size = 0;
-
-  if (has_timestamp()) {
-    // required uint64 timeStamp = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
-        this->_internal_timestamp());
-  }
-
-  if (has_message()) {
-    // required .BTL.MessageType.Message message = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_message());
-  }
-
-  return total_size;
-}
 size_t MessageType::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.MessageType)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required uint64 timeStamp = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
-        this->_internal_timestamp());
-
-    // required .BTL.MessageType.Message message = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_message());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // .BTL.MessageType.Message message = 1;
+  if (this->message() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_message());
+  }
+
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_localport());
+  }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
@@ -493,15 +442,11 @@ void MessageType::MergeFrom(const MessageType& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      timestamp_ = from.timestamp_;
-    }
-    if (cached_has_bits & 0x00000002u) {
-      message_ = from.message_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.message() != 0) {
+    _internal_set_message(from._internal_message());
+  }
+  if (from.localport() != 0) {
+    _internal_set_localport(from._internal_localport());
   }
 }
 
@@ -520,16 +465,14 @@ void MessageType::CopyFrom(const MessageType& from) {
 }
 
 bool MessageType::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   return true;
 }
 
 void MessageType::InternalSwap(MessageType* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(timestamp_, other->timestamp_);
   swap(message_, other->message_);
+  swap(localport_, other->localport_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata MessageType::GetMetadata() const {
@@ -543,16 +486,6 @@ void HostInfo::InitAsDefaultInstance() {
 }
 class HostInfo::_Internal {
  public:
-  using HasBits = decltype(std::declval<HostInfo>()._has_bits_);
-  static void set_has_host(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_port(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
-  static void set_has_isserver(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
-  }
 };
 
 HostInfo::HostInfo()
@@ -562,16 +495,15 @@ HostInfo::HostInfo()
 }
 HostInfo::HostInfo(const HostInfo& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_host()) {
+  if (!from._internal_host().empty()) {
     host_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.host_);
   }
   ::memcpy(&port_, &from.port_,
-    static_cast<size_t>(reinterpret_cast<char*>(&isserver_) -
-    reinterpret_cast<char*>(&port_)) + sizeof(isserver_));
+    static_cast<size_t>(reinterpret_cast<char*>(&isseeder_) -
+    reinterpret_cast<char*>(&port_)) + sizeof(isseeder_));
   // @@protoc_insertion_point(copy_constructor:BTL.HostInfo)
 }
 
@@ -579,8 +511,8 @@ void HostInfo::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_HostInfo_udp_2eproto.base);
   host_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&port_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&isserver_) -
-      reinterpret_cast<char*>(&port_)) + sizeof(isserver_));
+      reinterpret_cast<char*>(&isseeder_) -
+      reinterpret_cast<char*>(&port_)) + sizeof(isseeder_));
 }
 
 HostInfo::~HostInfo() {
@@ -607,47 +539,38 @@ void HostInfo::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    host_.ClearNonDefaultToEmptyNoArena();
-  }
-  if (cached_has_bits & 0x00000006u) {
-    ::memset(&port_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&isserver_) -
-        reinterpret_cast<char*>(&port_)) + sizeof(isserver_));
-  }
-  _has_bits_.Clear();
+  host_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  ::memset(&port_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&isseeder_) -
+      reinterpret_cast<char*>(&port_)) + sizeof(isseeder_));
   _internal_metadata_.Clear();
 }
 
 const char* HostInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required string host = 1;
+      // string host = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_host(), ptr, ctx, "BTL.HostInfo.host");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8(_internal_mutable_host(), ptr, ctx, "BTL.HostInfo.host");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required uint32 port = 2;
+      // uint32 port = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_port(&has_bits);
           port_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required bool isServer = 3;
+      // bool isSeeder = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
-          _Internal::set_has_isserver(&has_bits);
-          isserver_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          isseeder_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -664,7 +587,6 @@ const char* HostInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -678,27 +600,26 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required string host = 1;
-  if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string host = 1;
+  if (this->host().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_host().data(), static_cast<int>(this->_internal_host().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "BTL.HostInfo.host");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_host(), target);
   }
 
-  // required uint32 port = 2;
-  if (cached_has_bits & 0x00000002u) {
+  // uint32 port = 2;
+  if (this->port() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_port(), target);
   }
 
-  // required bool isServer = 3;
-  if (cached_has_bits & 0x00000004u) {
+  // bool isSeeder = 3;
+  if (this->isseeder() != 0) {
     stream->EnsureSpace(&target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_isserver(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_isseeder(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -709,55 +630,32 @@ failure:
   return target;
 }
 
-size_t HostInfo::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.HostInfo)
-  size_t total_size = 0;
-
-  if (has_host()) {
-    // required string host = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_host());
-  }
-
-  if (has_port()) {
-    // required uint32 port = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_port());
-  }
-
-  if (has_isserver()) {
-    // required bool isServer = 3;
-    total_size += 1 + 1;
-  }
-
-  return total_size;
-}
 size_t HostInfo::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.HostInfo)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
-    // required string host = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_host());
-
-    // required uint32 port = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_port());
-
-    // required bool isServer = 3;
-    total_size += 1 + 1;
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // string host = 1;
+  if (this->host().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_host());
+  }
+
+  // uint32 port = 2;
+  if (this->port() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_port());
+  }
+
+  // bool isSeeder = 3;
+  if (this->isseeder() != 0) {
+    total_size += 1 + 1;
+  }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
@@ -790,19 +688,15 @@ void HostInfo::MergeFrom(const HostInfo& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
-    if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      host_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.host_);
-    }
-    if (cached_has_bits & 0x00000002u) {
-      port_ = from.port_;
-    }
-    if (cached_has_bits & 0x00000004u) {
-      isserver_ = from.isserver_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.host().size() > 0) {
+
+    host_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.host_);
+  }
+  if (from.port() != 0) {
+    _internal_set_port(from._internal_port());
+  }
+  if (from.isseeder() != 0) {
+    _internal_set_isseeder(from._internal_isseeder());
   }
 }
 
@@ -821,18 +715,16 @@ void HostInfo::CopyFrom(const HostInfo& from) {
 }
 
 bool HostInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
   return true;
 }
 
 void HostInfo::InternalSwap(HostInfo* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
   host_.Swap(&other->host_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(port_, other->port_);
-  swap(isserver_, other->isserver_);
+  swap(isseeder_, other->isseeder_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata HostInfo::GetMetadata() const {
@@ -846,13 +738,6 @@ void ClientInfo::InitAsDefaultInstance() {
 }
 class ClientInfo::_Internal {
  public:
-  using HasBits = decltype(std::declval<ClientInfo>()._has_bits_);
-  static void set_has_remotehost(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_localport(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
 };
 
 ClientInfo::ClientInfo()
@@ -863,21 +748,24 @@ ClientInfo::ClientInfo()
 ClientInfo::ClientInfo(const ClientInfo& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_),
-      peer_(from.peer_) {
+      peers_(from.peers_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   remotehost_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_remotehost()) {
+  if (!from._internal_remotehost().empty()) {
     remotehost_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.remotehost_);
   }
-  localport_ = from.localport_;
+  ::memcpy(&localport_, &from.localport_,
+    static_cast<size_t>(reinterpret_cast<char*>(&isseeder_) -
+    reinterpret_cast<char*>(&localport_)) + sizeof(isseeder_));
   // @@protoc_insertion_point(copy_constructor:BTL.ClientInfo)
 }
 
 void ClientInfo::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ClientInfo_udp_2eproto.base);
   remotehost_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  localport_ = 0u;
+  ::memset(&localport_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&isseeder_) -
+      reinterpret_cast<char*>(&localport_)) + sizeof(isseeder_));
 }
 
 ClientInfo::~ClientInfo() {
@@ -904,49 +792,52 @@ void ClientInfo::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  peer_.Clear();
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    remotehost_.ClearNonDefaultToEmptyNoArena();
-  }
-  localport_ = 0u;
-  _has_bits_.Clear();
+  peers_.Clear();
+  remotehost_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  ::memset(&localport_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&isseeder_) -
+      reinterpret_cast<char*>(&localport_)) + sizeof(isseeder_));
   _internal_metadata_.Clear();
 }
 
 const char* ClientInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required string remoteHost = 1;
+      // string remoteHost = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_remotehost(), ptr, ctx, "BTL.ClientInfo.remoteHost");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8(_internal_mutable_remotehost(), ptr, ctx, "BTL.ClientInfo.remoteHost");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required uint32 localPort = 2;
+      // uint32 localPort = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_localport(&has_bits);
           localport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // repeated .BTL.HostInfo peer = 3;
+      // bool isSeeder = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          isseeder_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // repeated .BTL.HostInfo peers = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
           ptr -= 1;
           do {
             ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_peer(), ptr);
+            ptr = ctx->ParseMessage(_internal_add_peers(), ptr);
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -962,7 +853,6 @@ const char* ClientInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -976,29 +866,34 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required string remoteHost = 1;
-  if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string remoteHost = 1;
+  if (this->remotehost().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_remotehost().data(), static_cast<int>(this->_internal_remotehost().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "BTL.ClientInfo.remoteHost");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_remotehost(), target);
   }
 
-  // required uint32 localPort = 2;
-  if (cached_has_bits & 0x00000002u) {
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_localport(), target);
   }
 
-  // repeated .BTL.HostInfo peer = 3;
+  // bool isSeeder = 3;
+  if (this->isseeder() != 0) {
+    stream->EnsureSpace(&target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_isseeder(), target);
+  }
+
+  // repeated .BTL.HostInfo peers = 4;
   for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->_internal_peer_size()); i < n; i++) {
+      n = static_cast<unsigned int>(this->_internal_peers_size()); i < n; i++) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessageToArray(3, this->_internal_peer(i), target, stream);
+      InternalWriteMessageToArray(4, this->_internal_peers(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1009,53 +904,38 @@ failure:
   return target;
 }
 
-size_t ClientInfo::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.ClientInfo)
-  size_t total_size = 0;
-
-  if (has_remotehost()) {
-    // required string remoteHost = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_remotehost());
-  }
-
-  if (has_localport()) {
-    // required uint32 localPort = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_localport());
-  }
-
-  return total_size;
-}
 size_t ClientInfo::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.ClientInfo)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required string remoteHost = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_remotehost());
-
-    // required uint32 localPort = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_localport());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .BTL.HostInfo peer = 3;
-  total_size += 1UL * this->_internal_peer_size();
-  for (const auto& msg : this->peer_) {
+  // repeated .BTL.HostInfo peers = 4;
+  total_size += 1UL * this->_internal_peers_size();
+  for (const auto& msg : this->peers_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // string remoteHost = 1;
+  if (this->remotehost().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_remotehost());
+  }
+
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_localport());
+  }
+
+  // bool isSeeder = 3;
+  if (this->isseeder() != 0) {
+    total_size += 1 + 1;
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1089,17 +969,16 @@ void ClientInfo::MergeFrom(const ClientInfo& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  peer_.MergeFrom(from.peer_);
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      remotehost_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.remotehost_);
-    }
-    if (cached_has_bits & 0x00000002u) {
-      localport_ = from.localport_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  peers_.MergeFrom(from.peers_);
+  if (from.remotehost().size() > 0) {
+
+    remotehost_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.remotehost_);
+  }
+  if (from.localport() != 0) {
+    _internal_set_localport(from._internal_localport());
+  }
+  if (from.isseeder() != 0) {
+    _internal_set_isseeder(from._internal_isseeder());
   }
 }
 
@@ -1118,19 +997,17 @@ void ClientInfo::CopyFrom(const ClientInfo& from) {
 }
 
 bool ClientInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
-  if (!::PROTOBUF_NAMESPACE_ID::internal::AllAreInitialized(this->peer())) return false;
   return true;
 }
 
 void ClientInfo::InternalSwap(ClientInfo* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  peer_.InternalSwap(&other->peer_);
+  peers_.InternalSwap(&other->peers_);
   remotehost_.Swap(&other->remotehost_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(localport_, other->localport_);
+  swap(isseeder_, other->isseeder_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata ClientInfo::GetMetadata() const {
@@ -1144,16 +1021,6 @@ void FileInfo::InitAsDefaultInstance() {
 }
 class FileInfo::_Internal {
  public:
-  using HasBits = decltype(std::declval<FileInfo>()._has_bits_);
-  static void set_has_filehash(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_filename(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
-  static void set_has_filesize(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
-  }
 };
 
 FileInfo::FileInfo()
@@ -1163,15 +1030,14 @@ FileInfo::FileInfo()
 }
 FileInfo::FileInfo(const FileInfo& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   filehash_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_filehash()) {
+  if (!from._internal_filehash().empty()) {
     filehash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filehash_);
   }
   filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_filename()) {
+  if (!from._internal_filename().empty()) {
     filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
   }
   filesize_ = from.filesize_;
@@ -1210,46 +1076,36 @@ void FileInfo::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      filehash_.ClearNonDefaultToEmptyNoArena();
-    }
-    if (cached_has_bits & 0x00000002u) {
-      filename_.ClearNonDefaultToEmptyNoArena();
-    }
-  }
+  filehash_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  filename_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   filesize_ = 0u;
-  _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
 
 const char* FileInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required string filehash = 1;
+      // string filehash = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_filehash(), ptr, ctx, "BTL.FileInfo.filehash");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8(_internal_mutable_filehash(), ptr, ctx, "BTL.FileInfo.filehash");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required string fileName = 2;
+      // string fileName = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_filename(), ptr, ctx, "BTL.FileInfo.fileName");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8(_internal_mutable_filename(), ptr, ctx, "BTL.FileInfo.fileName");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required uint32 fileSize = 3;
+      // uint32 fileSize = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
-          _Internal::set_has_filesize(&has_bits);
           filesize_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -1267,7 +1123,6 @@ const char* FileInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1281,29 +1136,28 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required string filehash = 1;
-  if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string filehash = 1;
+  if (this->filehash().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_filehash().data(), static_cast<int>(this->_internal_filehash().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "BTL.FileInfo.filehash");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_filehash(), target);
   }
 
-  // required string fileName = 2;
-  if (cached_has_bits & 0x00000002u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string fileName = 2;
+  if (this->filename().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_filename().data(), static_cast<int>(this->_internal_filename().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "BTL.FileInfo.fileName");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_filename(), target);
   }
 
-  // required uint32 fileSize = 3;
-  if (cached_has_bits & 0x00000004u) {
+  // uint32 fileSize = 3;
+  if (this->filesize() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_filesize(), target);
   }
@@ -1316,59 +1170,34 @@ failure:
   return target;
 }
 
-size_t FileInfo::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.FileInfo)
-  size_t total_size = 0;
-
-  if (has_filehash()) {
-    // required string filehash = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filehash());
-  }
-
-  if (has_filename()) {
-    // required string fileName = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filename());
-  }
-
-  if (has_filesize()) {
-    // required uint32 fileSize = 3;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_filesize());
-  }
-
-  return total_size;
-}
 size_t FileInfo::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.FileInfo)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
-    // required string filehash = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filehash());
-
-    // required string fileName = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filename());
-
-    // required uint32 fileSize = 3;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_filesize());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // string filehash = 1;
+  if (this->filehash().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_filehash());
+  }
+
+  // string fileName = 2;
+  if (this->filename().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_filename());
+  }
+
+  // uint32 fileSize = 3;
+  if (this->filesize() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_filesize());
+  }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
@@ -1401,20 +1230,16 @@ void FileInfo::MergeFrom(const FileInfo& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
-    if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      filehash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filehash_);
-    }
-    if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
-    }
-    if (cached_has_bits & 0x00000004u) {
-      filesize_ = from.filesize_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.filehash().size() > 0) {
+
+    filehash_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filehash_);
+  }
+  if (from.filename().size() > 0) {
+
+    filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
+  }
+  if (from.filesize() != 0) {
+    _internal_set_filesize(from._internal_filesize());
   }
 }
 
@@ -1433,14 +1258,12 @@ void FileInfo::CopyFrom(const FileInfo& from) {
 }
 
 bool FileInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
   return true;
 }
 
 void FileInfo::InternalSwap(FileInfo* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
   filehash_.Swap(&other->filehash_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   filename_.Swap(&other->filename_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
@@ -1459,16 +1282,6 @@ void FileData::InitAsDefaultInstance() {
 }
 class FileData::_Internal {
  public:
-  using HasBits = decltype(std::declval<FileData>()._has_bits_);
-  static void set_has_filename(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_offset(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
-  }
-  static void set_has_data(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
 };
 
 FileData::FileData()
@@ -1478,15 +1291,14 @@ FileData::FileData()
 }
 FileData::FileData(const FileData& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_filename()) {
+  if (!from._internal_filename().empty()) {
     filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
   }
   data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (from._internal_has_data()) {
+  if (!from._internal_data().empty()) {
     data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
   }
   offset_ = from.offset_;
@@ -1525,44 +1337,34 @@ void FileData::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      filename_.ClearNonDefaultToEmptyNoArena();
-    }
-    if (cached_has_bits & 0x00000002u) {
-      data_.ClearNonDefaultToEmptyNoArena();
-    }
-  }
+  filename_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  data_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   offset_ = 0u;
-  _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
 
 const char* FileData::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required string fileName = 1;
+      // string fileName = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8Verify(_internal_mutable_filename(), ptr, ctx, "BTL.FileData.fileName");
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParserUTF8(_internal_mutable_filename(), ptr, ctx, "BTL.FileData.fileName");
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required uint32 offset = 2;
+      // uint32 offset = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_offset(&has_bits);
           offset_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional bytes data = 3;
+      // bytes data = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(_internal_mutable_data(), ptr, ctx);
@@ -1582,7 +1384,6 @@ const char* FileData::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1596,25 +1397,24 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required string fileName = 1;
-  if (cached_has_bits & 0x00000001u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+  // string fileName = 1;
+  if (this->filename().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_filename().data(), static_cast<int>(this->_internal_filename().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "BTL.FileData.fileName");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_filename(), target);
   }
 
-  // required uint32 offset = 2;
-  if (cached_has_bits & 0x00000004u) {
+  // uint32 offset = 2;
+  if (this->offset() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_offset(), target);
   }
 
-  // optional bytes data = 3;
-  if (cached_has_bits & 0x00000002u) {
+  // bytes data = 3;
+  if (this->data().size() > 0) {
     target = stream->WriteBytesMaybeAliased(
         3, this->_internal_data(), target);
   }
@@ -1627,54 +1427,33 @@ failure:
   return target;
 }
 
-size_t FileData::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.FileData)
-  size_t total_size = 0;
-
-  if (has_filename()) {
-    // required string fileName = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filename());
-  }
-
-  if (has_offset()) {
-    // required uint32 offset = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_offset());
-  }
-
-  return total_size;
-}
 size_t FileData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.FileData)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000005) ^ 0x00000005) == 0) {  // All required fields are present.
-    // required string fileName = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_filename());
-
-    // required uint32 offset = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_offset());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // optional bytes data = 3;
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000002u) {
+  // string fileName = 1;
+  if (this->filename().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_filename());
+  }
+
+  // bytes data = 3;
+  if (this->data().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
         this->_internal_data());
+  }
+
+  // uint32 offset = 2;
+  if (this->offset() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_offset());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1708,20 +1487,16 @@ void FileData::MergeFrom(const FileData& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
-    if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
-    }
-    if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
-    }
-    if (cached_has_bits & 0x00000004u) {
-      offset_ = from.offset_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.filename().size() > 0) {
+
+    filename_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.filename_);
+  }
+  if (from.data().size() > 0) {
+
+    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
+  }
+  if (from.offset() != 0) {
+    _internal_set_offset(from._internal_offset());
   }
 }
 
@@ -1740,14 +1515,12 @@ void FileData::CopyFrom(const FileData& from) {
 }
 
 bool FileData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000005) != 0x00000005) return false;
   return true;
 }
 
 void FileData::InternalSwap(FileData* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
   filename_.Swap(&other->filename_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   data_.Swap(&other->data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
@@ -1766,13 +1539,6 @@ void CommonReply::InitAsDefaultInstance() {
 }
 class CommonReply::_Internal {
  public:
-  using HasBits = decltype(std::declval<CommonReply>()._has_bits_);
-  static void set_has_status(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_localport(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
 };
 
 CommonReply::CommonReply()
@@ -1782,8 +1548,7 @@ CommonReply::CommonReply()
 }
 CommonReply::CommonReply(const CommonReply& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&status_, &from.status_,
     static_cast<size_t>(reinterpret_cast<char*>(&localport_) -
@@ -1820,36 +1585,29 @@ void CommonReply::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    ::memset(&status_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&localport_) -
-        reinterpret_cast<char*>(&status_)) + sizeof(localport_));
-  }
-  _has_bits_.Clear();
+  ::memset(&status_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&localport_) -
+      reinterpret_cast<char*>(&status_)) + sizeof(localport_));
   _internal_metadata_.Clear();
 }
 
 const char* CommonReply::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // required uint32 status = 1;
+      // uint32 status = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
-          _Internal::set_has_status(&has_bits);
           status_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // required uint32 localPort = 2;
+      // uint32 localPort = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          _Internal::set_has_localport(&has_bits);
           localport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -1867,7 +1625,6 @@ const char* CommonReply::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
     }  // switch
   }  // while
 success:
-  _has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1881,15 +1638,14 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
-  // required uint32 status = 1;
-  if (cached_has_bits & 0x00000001u) {
+  // uint32 status = 1;
+  if (this->status() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_status(), target);
   }
 
-  // required uint32 localPort = 2;
-  if (cached_has_bits & 0x00000002u) {
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
     stream->EnsureSpace(&target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_localport(), target);
   }
@@ -1902,47 +1658,27 @@ failure:
   return target;
 }
 
-size_t CommonReply::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:BTL.CommonReply)
-  size_t total_size = 0;
-
-  if (has_status()) {
-    // required uint32 status = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_status());
-  }
-
-  if (has_localport()) {
-    // required uint32 localPort = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_localport());
-  }
-
-  return total_size;
-}
 size_t CommonReply::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:BTL.CommonReply)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required uint32 status = 1;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_status());
-
-    // required uint32 localPort = 2;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_localport());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
-  }
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // uint32 status = 1;
+  if (this->status() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_status());
+  }
+
+  // uint32 localPort = 2;
+  if (this->localport() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_localport());
+  }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
@@ -1975,15 +1711,11 @@ void CommonReply::MergeFrom(const CommonReply& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      status_ = from.status_;
-    }
-    if (cached_has_bits & 0x00000002u) {
-      localport_ = from.localport_;
-    }
-    _has_bits_[0] |= cached_has_bits;
+  if (from.status() != 0) {
+    _internal_set_status(from._internal_status());
+  }
+  if (from.localport() != 0) {
+    _internal_set_localport(from._internal_localport());
   }
 }
 
@@ -2002,14 +1734,12 @@ void CommonReply::CopyFrom(const CommonReply& from) {
 }
 
 bool CommonReply::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   return true;
 }
 
 void CommonReply::InternalSwap(CommonReply* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
   swap(status_, other->status_);
   swap(localport_, other->localport_);
 }

@@ -1,3 +1,8 @@
-g++ -Wall -std=c++11 -stdlib=libc++ -lprotobuf main.cpp clientserver.cc udp.pb.cc network.cc md5.cpp thread_helper.cc -o binary
- 
-g++ -Wall -std=c++11 -stdlib=libc++ -lprotobuf main.cpp clientserver.cc udp.pb.cc network.cc md5.cpp -o binary && cp binary ~/Downloads/demo/binary && cp binary /tmp/demo1/binary && cp binary /tmp/demo2/binary
+// Build
+g++ -Wall main.cpp clientserver.cc network.cc md5.cpp udp.pb.cc -std=c++11 -stdlib=libc++ -lprotobuf -o binary
+
+// Linux
+g++ -Wall -std=c++11 -stdlib=libc++ -lprotobuf main.cpp clientserver.cc udp.pb.cc network.cc md5.cpp thread_helper.cc `pkg-config ...` -o binary
+
+// Debug local
+g++ -Wall main.cpp clientserver.cc udp.pb.cc network.cc md5.cpp -std=c++11 -stdlib=libc++ -lprotobuf -o binary && cp binary ~/Downloads/demo/binary && cp binary /tmp/demo1/binary && cp binary /tmp/demo2/binary

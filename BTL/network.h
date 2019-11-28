@@ -1,5 +1,5 @@
-#ifndef GRANDPARENT_H
-#define GRANDPARENT_H
+#ifndef NETWORK_H
+#define NETWORK_H
 
 #include <iostream>
 #include <stdio.h>
@@ -10,6 +10,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+// Send UDP packet to peer
+size_t networkSend(std::string HOST, int PORT, std::string BUFFER);
+
 class Network
 {
 private:
@@ -18,8 +21,6 @@ private:
 public:
 	// Socket for receiving message
 	int recvfd;
-	// Send UDP packet to peer
-	size_t networkSend(std::string HOST, int PORT, std::string BUFFER);
 	// Recv UDP packet from peer, return condition, buffer & information about sender info
 	size_t networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT);
 	// Constructor create listening socket recvfd at PORT
@@ -28,4 +29,4 @@ public:
 	~Network();
 };
 
-#endif /* !GRANDPARENT_H */
+#endif /* !NETWORK_H */

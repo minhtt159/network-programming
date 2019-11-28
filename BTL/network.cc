@@ -3,7 +3,7 @@
 // Constructor create listening socket recvfd at PORT
 Network::Network(int PORT, int BUFFER){
     // sysctl net.inet.udp.maxdgram
-    this->BUFFSIZE = 128*1024; // for kernel to breath
+    this->BUFFSIZE = 10*1024; // for kernel to breath
     // Create recvfd
     if ( (this->recvfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
         std::cout<< "Network::Network socket creation failed\n"; 
@@ -39,7 +39,7 @@ Network::Network(int PORT, int BUFFER){
 };
 
 // Send UDP packet (BUFFER) to peer (HOST:PORT)
-size_t Network::networkSend(std::string HOST, int PORT, std::string BUFFER) {
+size_t networkSend(std::string HOST, int PORT, std::string BUFFER) {
     // Creating socket file descriptor 
     int sendfd;
     if ( (sendfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
