@@ -1,10 +1,7 @@
 # Bài tập lớn lập trình mạng
 
 Tên sinh viên: Trần Tuấn Minh
-<<<<<<< HEAD
 
-=======
->>>>>>> 17edba8fabbc27733afee339c418a4c1b9dd9a98
 MSV: 15021754
 
 ### Bài toán:
