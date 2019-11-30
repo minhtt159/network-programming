@@ -204,7 +204,7 @@ void Sockpeer::run(){
             ret = poll(fds, 2, timeout);    
         }
         else {
-            ret = poll(fds, 1, timeout);
+            ret = poll(fds, 1, -1);
         }
         
         if (ret < 0) {
@@ -271,13 +271,17 @@ void Sockpeer::run(){
                 requestedFile.set_filehash(this->fileHash);
                 requestedFile.set_filesize(this->fileSize);
                 dataOut = wrapMessage(BTL::MessageType::FILEINFO, this->localPort, &requestedFile);
-                for (auto peer: this->tracker->peers()){
+                for (int i=0; i < this->tracker->peers_size(); i++){
+                    auto peer = this->tracker->mutable_peers(i);
                     // Send requested file to all peers
-                    networkSend(peer.host(), peer.port(), dataOut);
+                    networkSend(peer->host(), peer->port(), dataOut);
                     // Mark all peer is client
-                    peer.set_isseeder(false); 
+                    peer->set_isseeder(false); 
                 }
-                // doneWork = true;
+                // for (auto peer: this->tracker->peers()){
+                //     printf("%s:%d - %d\n", peer.host().c_str(), peer.port(), peer.isseeder());
+                // }
+                doneWork = true;
             }
 
             /* Check if data to read from socket */
@@ -396,10 +400,17 @@ void Sockpeer::run(){
                     }
                     // One file at a time 
                     if (this->fileHandle != 0){
-                        printf("Sockpeer::run this client already open ofstream\n");
+                        if (DEBUG) printf("Sockpeer::run this client already open ofstream\n");
                         continue;
                     }
-
+                    // New file will arrived
+                    for (int i=0; i < this->tracker->peers_size(); i++){
+                        auto peer = this->tracker->mutable_peers(i);
+                        if (peer->host() == peerHost and peer->port() == peerPort){
+                            continue;
+                        }
+                        peer->set_isseeder(false); 
+                    }
                     // Only non-seeder can get this message
                     BTL::FileInfo fileInfo;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
@@ -481,7 +492,7 @@ void Sockpeer::run(){
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
 
                         msync(this->fileBuffer, this->fileSize, MS_SYNC);
-                        this->tracker->set_isseeder(true);
+                        // this->tracker->set_isseeder(true);
                         // Send done to all
                         BTL::FileCache fileCache;
                         fileCache.set_isseeder(false);
@@ -498,6 +509,7 @@ void Sockpeer::run(){
                         }
                         if (isDone){
                             this->finalize();
+                            blockMark = "";
                         }
                     }
                     doneWork = true;
@@ -526,6 +538,7 @@ void Sockpeer::run(){
                             }
                             if (isDone){
                                 this->finalize();
+                                blockMark = "";
                             }
                         }
                         else {
@@ -541,7 +554,7 @@ void Sockpeer::run(){
                                 fileData.set_data(std::string(this->fileBuffer + (block_i * this->dataSize), read_length));
                                 dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
                                 if (DEBUG) printf("Sending block %d - %d to %s:%zu\n", block_i, read_length, peerHost.c_str(), peerPort);
-                                n = networkSend(peerHost, peerPort, dataOut);
+                                networkSend(peerHost, peerPort, dataOut);
                             }
                         }
                     }
@@ -576,7 +589,7 @@ void Sockpeer::run(){
                 }
             }
         }
-        if (fileHandle == 0){
+        if (this->fileHandle == 0){
             // No work, continue
             continue;
         }
@@ -589,22 +602,15 @@ void Sockpeer::run(){
             timeout = timeout * timeout;
             BTL::FileCache cache;
             cache.set_isseeder(true);
+            cache.clear_cache();
             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &cache);
             for (auto peer: this->tracker->peers()){
                 if (peer.isseeder() == false) {
                     networkSend(peer.host(), peer.port(), dataOut);
+                    if (DEBUG) printf("Asking %s:%d\n", peer.host().c_str(), peer.port());
                 }
-                if (DEBUG) printf("Asking %s:%d\n", peer.host().c_str(), peer.port());
             }
             // Check for all peer done here?
-        }
-        else {
-            // if (doneWork == true) {
-            //     timeout = 16;
-            // }
-            // else {
-            //     timeout = timeout * timeout;
-            // }
         }
     }
     return;

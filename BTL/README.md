@@ -170,7 +170,7 @@ Tất cả các message gửi lên server sẽ có cấu trúc như sau
 
 ### Demo:
 
-![alt text](image/DEMO.png "DEMO")
+![alt text](image/DEMO_v2.png "DEMO")
 
 Lưu ý: Cần phải có protobuf trước khi build/run
 
