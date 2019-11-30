@@ -34,10 +34,11 @@ MSV: 15021754
 	- Server gửi danh sách ClientInfo, đồng thời cập nhật Client vào danh sách của mình
 	- Client(s) nhận danh sách ClientInfo của Server, cập nhật lại ClientInfo của mình
 4. File transfer
-	- Server in ra danh sách tên file có thể gửi
+	- Server in ra danh sách tên file có thể gửi (?)
 	- Server nhập tên file, bắt đầu tính thời gian (1)
 	- Server gửi thông tin sẽ chuyển file đến Client(s): {tên file, checksum, dung lượng file}
-	- Server sẽ gửi lần lượt các packet: block[i] -> Client[i%3]
+	- Seeder sẽ hỏi xem các Peer có cần block data nào, và trả các block data đó cho Peer
+	- Nếu Peer không trả lời, Seeder sẽ hỏi lại Peer với timeout theo exponential backoff
 5. Extra
 	- [√] Client sau khi nhận được packet, gửi packet đó đến cho Client khác
 	- [√] Khi Client nhận được đủ file, thông báo cho các Peer biết, in ra thời gian (2)
