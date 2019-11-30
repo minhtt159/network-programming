@@ -173,12 +173,12 @@ void Sockpeer::run(){
     // Create 2 poll for socket and stdin
     struct pollfd fds[2];
     // Stream for reading / writing files
-    int fileHandle = -1;
+    int fileHandle = 0;
 
     // File transfer helper variables
     std::string fileName = "";
     std::string fileHash = "";
-    int fileSize = 0;
+    size_t fileSize = 0;
 
     int block_count;
     int last_unknown_block = 0;
@@ -236,7 +236,7 @@ void Sockpeer::run(){
                     break;
                 }
 
-                if (fileHandle != -1){
+                if (fileHandle != 0){
                     if (DEBUG) printf("Some file is pending, wait for client to response\n");
                     continue;
                 }
@@ -340,7 +340,7 @@ void Sockpeer::run(){
                 bool clean_eof = true;
                 google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerMessageType, &zstream, &clean_eof);
                 clean_eof = true;
-                int peerPort = peerMessageType.localport();
+                size_t peerPort = peerMessageType.localport();
 
                 if (peerMessageType.message() == BTL::MessageType::HOSTINFO) {
                     // Some peer try to update its position
@@ -445,7 +445,7 @@ void Sockpeer::run(){
                         continue;
                     }
                     // One file at a time 
-                    if (fileHandle != -1){
+                    if (fileHandle != 0){
                         printf("Sockpeer::run this client already open ofstream\n");
                         continue;
                     }
@@ -496,6 +496,9 @@ void Sockpeer::run(){
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
                         printf("Err? FILEDATA\n");
+                        continue;
+                    }
+                    if (fileHandle == 0){
                         continue;
                     }
                     int block_i = fileData.offset() / this->dataSize;
@@ -567,7 +570,7 @@ void Sockpeer::run(){
                             printf("All peers done\n");
                             printf("All time: %lu sec\n", time(NULL) - startTime);
                             printf("Ask time: %d\n", askTime);
-                            close(fileHandle);
+                            fileHandle = close(fileHandle);
                             munmap(fileBuffer, fileSize);
                         }
                         doneWork = true;
@@ -581,7 +584,7 @@ void Sockpeer::run(){
                     // printf("Sockpeer::run Client %s:%d is asking for block %d\n", peerHost.c_str(), reply.localport(), reply.status());
                     if (DEBUG) printf("%s:%d ask for %d\n", peerHost.c_str(), reply.localport(), reply.status());
 
-                    if (fileHandle != -1){
+                    if (fileHandle != 0){
                         askTime++;
                         // char buffer[this->dataSize];
                         int block_i = reply.status();
@@ -609,7 +612,7 @@ void Sockpeer::run(){
             continue;
         }
         // ask all peer for non written block
-        if (fileHandle != -1){
+        if (fileHandle != 0){
             // Stand by mode 
             if (remain_block == 0){
                 continue;
