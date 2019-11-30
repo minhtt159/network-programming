@@ -37,8 +37,18 @@ private:
 	time_t startTime;
 	// peer lookup map
 	std::unordered_map<std::string, bool> lookup;
-	// mark if peer is done
-	// std::unordered_map<std::string, bool> markFile;
+	//
+    int askTime;
+    int dupTime;
+    // File variables
+    int fileHandle;
+    char* fileBuffer;
+    std::string fileName;
+    std::string fileHash;
+    size_t fileSize;
+
+protected:
+	void finalize();
 
 public:
 	// Network object for send and recv

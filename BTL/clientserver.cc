@@ -137,57 +137,53 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
     }
     else {
         this->tracker->set_isseeder(true);
-        // std::cout << "Sockpeer::Sockpeer created listen socket at port " << localPort << std::endl;
     }
     this->connected = true;
     return;
 };
 
+void Sockpeer::finalize(){
+    if (this->fileHandle == 0){
+        printf("Sockpeer::finalize Why here?\n");
+        return;
+    }
+    printf("All peers done\n");
+    printf("All time: %lu sec\n", time(NULL) - this->startTime);
+    printf("Asked: %d\tDup: %d\n", this->askTime, this->dupTime);
+
+    if (close(this->fileHandle) == 0){
+        this->fileHandle = 0;
+        munmap(this->fileBuffer, this->fileSize);
+        this->fileName = "";
+        this->fileHash = "";
+        this->fileSize = 0;
+    }
+    else {
+        printf("Sockpeer::run Cannot close file\n");
+    }
+}
+
 void Sockpeer::run(){
-    static std::string blockMark = "1";
-    // static std::string blockDone = "0";
-    static char* fileBuffer;
-
-    // Lambda function to update fileData
-    // auto parseFunction = [](BTL::ClientInfo *lTracker, BTL::FileData lFileData, std::string lPeerHost, int lPeerPort){
-    //     memcpy(fileBuffer + lFileData.offset(), lFileData.data().c_str(), lFileData.data().length());
-
-    //     // Bounce back to other client
-    //     for (auto peer: lTracker->peers()){
-    //         if (peer.isseeder()){
-    //             continue;
-    //         }
-    //         if (peer.host() == lPeerHost and peer.port() == lPeerPort){
-    //             continue;
-    //         }
-    //         // Send file info to all peer that is not server and not the one who sent this message
-    //         std::string dataOut = wrapMessage(BTL::MessageType::FILEDATA, lPeerPort, &lFileData);
-    //         networkSend(peer.host(), peer.port(), dataOut);  
-    //     }
-    // };
     // Helper variable
+    static std::string blockMark = "1";
     size_t n;
     char output_buffer[this->BUFFSIZE];
     std::string dataOut;
+    std::string marker;
 
     // Create 2 poll for socket and stdin
     struct pollfd fds[2];
     // Stream for reading / writing files
-    int fileHandle = 0;
-
-    // File transfer helper variables
-    std::string fileName = "";
-    std::string fileHash = "";
-    size_t fileSize = 0;
+    this->fileHandle = 0;
+    this->fileName = "";
+    this->fileHash = "";
+    this->fileSize = 0;
 
     int block_count;
-    int last_unknown_block = 0;
     int remain_block = 0;
-    std::string marker;
     bool doneWork;
-    int askTime = 0;
-    int timeout = 0;
-    int timeout_hit = 1;
+
+    int timeout = 10;
 
     // Multiplexing fd
     fds[0].fd = this->networkObj->recvfd;
@@ -236,87 +232,52 @@ void Sockpeer::run(){
                     break;
                 }
 
-                if (fileHandle != 0){
+                if (this->fileHandle != 0){
                     if (DEBUG) printf("Some file is pending, wait for client to response\n");
                     continue;
                 }
 
-                fileName = std::string(output_buffer, n-1);
-                fileHandle = open(fileName.c_str(), O_RDONLY);
-                if (fileHandle < 0) {
+                this->fileName = std::string(output_buffer, n-1);
+                this->fileHandle = open(fileName.c_str(), O_RDONLY);
+                if (this->fileHandle < 0) {
                     // Open file failed, print error
                     if (DEBUG) printf("Sockpeer::run Open file failed, error: %s\n", strerror(errno));
                     continue;
                 }
                 // obtain file size
                 struct stat sb;
-                fstat(fileHandle, &sb);
-                fileSize = sb.st_size;
-                printf("Sockpeer::run Server is sending \"%s\" with fileSize = %zu to %d client(s)\n", fileName.c_str(), fileSize, this->tracker->peers_size());
+                fstat(this->fileHandle, &sb);
+                this->fileSize = sb.st_size;
+                printf("Sockpeer::run Server is sending \"%s\" with fileSize = %zu to %d client(s)\n", this->fileName.c_str(), this->fileSize, this->tracker->peers_size());
                 
-                // Allocate memory
-                fileBuffer = (char *)mmap(0, fileSize, PROT_READ, MAP_SHARED, fileHandle, 0);
-                std::string rawData = std::string(fileBuffer, fileSize);
-                // Calculate hash - this might slow bcuz C++ :shrug:
-                fileHash = md5(rawData);
-                printf("Sockpeer::run File hash: %s\n", fileHash.c_str());
-
-                startTime = time(NULL);
-                askTime = 0;
-
-                // Send fileInfo to all peers
-                BTL::FileInfo requestedFile;
-                requestedFile.set_filename(fileName);
-                requestedFile.set_filehash(fileHash);
-                requestedFile.set_filesize(fileSize);
-                for (auto peer: this->tracker->peers()){
-                    dataOut = wrapMessage(BTL::MessageType::FILEINFO, this->localPort, &requestedFile);
-                    networkSend(peer.host(), peer.port(), dataOut);
-                    peer.set_isseeder(false); 
-                }
-
-                // Begin send fileData
-                block_count = 0;
-                while ((block_count * this->dataSize) < fileSize){
-                    // Prepare information
-                    int offset = block_count * this->dataSize;
-                    int read_length = (fileSize - offset) < this->dataSize ? (fileSize - offset) : this->dataSize;
-                    rawData = std::string(fileBuffer + offset, read_length);
-
-                    // Prepare fileData object
-                    BTL::FileData fileData;
-                    fileData.set_filename(fileName);
-                    fileData.set_offset(offset);
-                    fileData.set_data(rawData);
-                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
-                    // VERSION 1: SEND ALL TO ALL
-                    for (auto peer: this->tracker->peers()){
-                        // Should spawn thread to do this?
-                        networkSend(peer.host(), peer.port(), dataOut);
-                        if (DEBUG) printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
-                    }
-                    // VERSION 2: SEND 1/peer_size
-                    // auto peer = this->tracker->peers(block_count % this->tracker->peers_size());
-                    // networkSend(peer.host(), peer.port(), dataOut);
-                    // if (DEBUG) printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
-
-                    block_count += 1;
-                }
-                printf("Sockpeer::run Server sent %d blocks\n", block_count);
+                block_count = (this->fileSize/this->dataSize) + 1;
                 char buffer[block_count];
                 memset(buffer, '0', block_count);
                 blockMark = std::string(buffer, block_count);
 
-                // // mark that all clients is not done
-                // for (auto peer: this->tracker->peers()){
-                //     marker = peer.host() + ":";
-                //     marker += std::to_string(peer.port());
-                //     markFile[marker] = false;
-                // }
+                // Allocate memory
+                this->fileBuffer = (char *)mmap(0, this->fileSize, PROT_READ, MAP_SHARED, this->fileHandle, 0);
+                std::string rawData = std::string(this->fileBuffer, this->fileSize);
+                // Calculate hash - this might slow bcuz C++ :shrug:
+                this->fileHash = md5(rawData);
+                printf("Sockpeer::run File hash: %s\n", this->fileHash.c_str());
 
-                // // Hold for more requests
-                // std::cout << "Initial send done\n";
-                doneWork = true;
+                this->startTime = time(NULL);
+                this->askTime = 0;
+
+                // Send fileInfo to all peers
+                BTL::FileInfo requestedFile;
+                requestedFile.set_filename(this->fileName);
+                requestedFile.set_filehash(this->fileHash);
+                requestedFile.set_filesize(this->fileSize);
+                dataOut = wrapMessage(BTL::MessageType::FILEINFO, this->localPort, &requestedFile);
+                for (auto peer: this->tracker->peers()){
+                    // Send requested file to all peers
+                    networkSend(peer.host(), peer.port(), dataOut);
+                    // Mark all peer is client
+                    peer.set_isseeder(false); 
+                }
+                // doneWork = true;
             }
 
             /* Check if data to read from socket */
@@ -344,7 +305,7 @@ void Sockpeer::run(){
                 size_t peerPort = peerMessageType.localport();
 
                 if (peerMessageType.message() == BTL::MessageType::HOSTINFO) {
-                    // Some peer try to update its position
+                    // Some peer is new to the network
                     BTL::HostInfo peer;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
                     
@@ -358,18 +319,6 @@ void Sockpeer::run(){
                         a->set_isseeder(peer.isseeder());
                         this->lookup[marker] = true;
                     }
-                    // else if (peer.isseeder() == true){
-                    //     // This peer received all the file, change to seeder
-                    //     for (auto a: this->tracker->peers()){
-                    //         if (a.host() == peer.host() and a.port() == peer.port()){
-                    //             a.set_isseeder(true);
-                    //             break;
-                    //         }
-                    //     }
-                    // }
-                    // else {
-                    //     if (DEBUG) printf("Sockpeer::run HOSTINFO wrong %s:%d - %d\n", peer.host().c_str(), peer.port(), peer.isseeder());
-                    // }
                     // Show client list
                     if (DEBUG) {
                         std::cout << "Sockpeer::Sockpeer this client now contains " << this->tracker->peers_size() << " peer(s)\n";
@@ -446,7 +395,7 @@ void Sockpeer::run(){
                         continue;
                     }
                     // One file at a time 
-                    if (fileHandle != 0){
+                    if (this->fileHandle != 0){
                         printf("Sockpeer::run this client already open ofstream\n");
                         continue;
                     }
@@ -455,41 +404,34 @@ void Sockpeer::run(){
                     BTL::FileInfo fileInfo;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
 
-                    fileName = fileInfo.filename();
-                    fileHash = fileInfo.filehash();
-                    fileSize = fileInfo.filesize();
+                    this->fileName = fileInfo.filename();
+                    this->fileHash = fileInfo.filehash();
+                    this->fileSize = fileInfo.filesize();
 
                     // Mark helper to track written block
-                    block_count = fileSize/this->dataSize + 1;
+                    block_count = (this->fileSize/this->dataSize) + 1;
                     char buffer[block_count];
                     memset(buffer, '1', block_count);
                     blockMark = std::string(buffer, block_count);
-                    // memset(buffer, '0', block_count);
-                    // blockDone = std::string(buffer, block_count);
+                    remain_block = std::count(blockMark.begin(),blockMark.end(),'1');
 
-                    // 
-                    fileHandle = open(fileName.c_str(), O_RDWR | O_CREAT, (mode_t)0600);
-                    if (ftruncate(fileHandle, fileSize) != 0){
+                    // Open file
+                    this->fileHandle = open(this->fileName.c_str(), O_RDWR | O_CREAT, (mode_t)0600);
+                    if (ftruncate(this->fileHandle, this->fileSize) != 0){
                         printf("Sockpeer::run file trucate failed: %s\n", strerror(errno));
                         close(fileHandle);
                         continue;
                     }
-                    fsync(fileHandle);
+                    fsync(this->fileHandle);
+                    // Map file to memory (not so efficient but no need to work with files)
+                    this->fileBuffer = (char *)mmap(0, this->fileSize, PROT_READ | PROT_WRITE, MAP_SHARED, this->fileHandle, 0);
 
-                    fileBuffer = (char *)mmap(0, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED, fileHandle, 0);
-
-                    printf("Sockpeer::run Client open %s\n", fileName.c_str());
+                    printf("Sockpeer::run Client open %s, waiting for %5d blocks\n", this->fileName.c_str(), block_count);
                     // Mark time begin
                     startTime = time(NULL);
                     askTime = 0;
-                    // Bounce this message to other client
-                    // for (auto peer: this->tracker->peers()){
-                    //     if (!peer.isseeder()){
-                    //         // Send file info to all peer that is not seeder
-                    //         dataOut = wrapMessage(BTL::MessageType::FILEINFO, this->localPort, &fileInfo);
-                    //         networkSend(peer.host(), peer.port(), dataOut);  
-                    //     }
-                    // }
+                    dupTime = 0;
+
                     doneWork = true;
                 }
                 else if (peerMessageType.message() == BTL::MessageType::FILEDATA){
@@ -497,23 +439,25 @@ void Sockpeer::run(){
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
-                        printf("Err? FILEDATA\n");
+                        // printf("Err? FILEDATA\n");
+                        dupTime++;
                         continue;
                     }
-                    if (fileHandle == 0){
+                    if (this->fileHandle == 0){
+                        if (DEBUG) printf("Sockpeer::run FileData - No fileHandle\n");
                         continue;
                     }
                     int block_i = fileData.offset() / this->dataSize;
                     // If this block is already set, skip it
                     if (blockMark[block_i] == '0'){
+                        // printf("WTF\n");
+                        dupTime++;
                         continue;
                     }
-                    // Create new thread to deal with data
-                    // std::thread threadObj(parseFunction, std::ref(this->tracker), fileData, peerHost, peerPort);
-                    // threadObj.detach();
-                    memcpy(fileBuffer + fileData.offset(), fileData.data().c_str(), fileData.data().length());
+                    memcpy(this->fileBuffer + fileData.offset(), fileData.data().c_str(), fileData.data().length());
 
                     // Bounce back to other client
+                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
                     for (auto peer: this->tracker->peers()){
                         if (peer.isseeder()){
                             continue;
@@ -522,26 +466,29 @@ void Sockpeer::run(){
                             continue;
                         }
                         // Send file info to all peer that is not server and not the one who sent this message
-                        std::string dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
                         networkSend(peer.host(), peer.port(), dataOut);  
                     }
 
                     // Mark block when done?
                     blockMark[block_i] = '0';
                     remain_block = std::count(blockMark.begin(),blockMark.end(),'1');
+
                     if (DEBUG) printf("%s:%zu <- block %d\t REM: %d\n", peerHost.c_str(), peerPort, block_i, remain_block);
-                    else std::cout << "\rRemaining: " << remain_block << "       " << std::flush;
+                    else std::cout << "\rREM:" << std::setw(6) << remain_block << "\tDUP:" << std::setw(6) << dupTime << "   " << std::flush;
 
                     if (remain_block == 0){
                         std::cout << "\nSockpeer::run Received all\n";
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
-                        msync(fileBuffer, fileSize, MS_SYNC);
 
+                        msync(this->fileBuffer, this->fileSize, MS_SYNC);
+                        this->tracker->set_isseeder(true);
                         // Send done to all
-                        BTL::CommonReply reply;
-                        reply.set_status(-1);
-                        reply.set_localport(this->localPort);
-                        dataOut = wrapMessage(BTL::MessageType::COMMONREPLY, this->localPort, &reply);
+                        BTL::FileCache fileCache;
+                        fileCache.set_isseeder(false);
+                        fileCache.clear_cache();
+                        fileCache.add_cache(-1);
+                        dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &fileCache);
+
                         bool isDone = true;
                         for (auto peer: this->tracker->peers()){
                             networkSend(peer.host(), peer.port(), dataOut);
@@ -550,105 +497,114 @@ void Sockpeer::run(){
                             }
                         }
                         if (isDone){
-                            printf("All peers done\n");
-                            printf("All time: %lu sec\n", time(NULL) - startTime);
-                            printf("Ask time: %d\n", askTime);
-                            fileHandle = close(fileHandle);
-                            munmap(fileBuffer, fileSize);
+                            this->finalize();
                         }
-                        // break;
                     }
                     doneWork = true;
                 }
-                else if (peerMessageType.message() == BTL::MessageType::COMMONREPLY){
-                    BTL::CommonReply reply;
-                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&reply, &zstream, &clean_eof);
-
+                else if (peerMessageType.message() == BTL::MessageType::FILECACHE){
+                    BTL::FileCache fileCache;
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileCache, &zstream, &clean_eof);
                     if (fileHandle == 0){
+                        if (DEBUG) printf("Sockpeer::run FileCache - No fileHandle\n");
                         continue;
                     }
-                    if (reply.status() == -1){
-                        // Some peer is done, update it to seeder
-                        // printf("Getting %s:%d\n", peerHost.c_str(), peerPort);
-                        bool isDone = true;
-                        for (int i = 0; i<this->tracker->peers_size(); i++){
-                            auto peer = this->tracker->mutable_peers(i);
-                            if (peer->host() == peerHost and peer->port() == peerPort){
-                                peer->set_isseeder(true);
-                            }
-                            if (peer->isseeder() == false){
-                                isDone = false;
-                            }
-                            if (DEBUG) printf("%s:%d - %d\n", peer->host().c_str(), peer->port(), peer->isseeder());
-                        }
-
-                        if (isDone and remain_block == 0){
-                            printf("All peers done\n");
-                            printf("All time: %lu sec\n", time(NULL) - startTime);
-                            printf("Ask time: %d\n", askTime);
-                            fileHandle = close(fileHandle);
-                            munmap(fileBuffer, fileSize);
-                        }
-                        doneWork = true;
-                        continue;   
-                    }
-                    // When peer received this message, other peer is requesting for some block
-                    else if (blockMark[reply.status()] == '1'){
-                        // Block is not written, skip
-                        continue;
-                    }
-                    // printf("Sockpeer::run Client %s:%d is asking for block %d\n", peerHost.c_str(), reply.localport(), reply.status());
-                    if (DEBUG) printf("%s:%d ask for %d\n", peerHost.c_str(), reply.localport(), reply.status());
-
                     askTime++;
-                    // char buffer[this->dataSize];
-                    int block_i = reply.status();
-                    int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
-                    
-                    // Prepare data
-                    BTL::FileData fileData;
-                    fileData.set_filename(fileName);
-                    fileData.set_offset(block_i * this->dataSize);
-                    fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
-                    // Send to that client
-                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
-                    networkSend(peerHost, reply.localport(), dataOut);
-                    doneWork = true;    
+                    // if this received message from peer, send known block
+                    if (fileCache.isseeder() == false){
+                        if (fileCache.cache(0) == -1){
+                            // Mark this peer is done
+                            bool isDone = true;
+                            for (int i = 0; i < this->tracker->peers_size(); i++){
+                                auto peer = this->tracker->mutable_peers(i);
+                                if (peer->host() == peerHost and peer->port() == peerPort){
+                                    peer->set_isseeder(true);
+                                }
+                                if (peer->isseeder() == false){
+                                    isDone = false;
+                                }
+                            }
+                            if (isDone){
+                                this->finalize();
+                            }
+                        }
+                        else {
+                            for (auto block_i: fileCache.cache()){
+                                if (blockMark[block_i] == '1'){
+                                    // Don't know this block, skip
+                                    continue;
+                                }
+                                int read_length = (this->fileSize - (block_i * this->dataSize)) < this->dataSize ? (this->fileSize - (block_i * this->dataSize)) : this->dataSize;
+                                BTL::FileData fileData;
+                                fileData.set_filename(this->fileName);
+                                fileData.set_offset(block_i * this->dataSize);
+                                fileData.set_data(std::string(this->fileBuffer + (block_i * this->dataSize), read_length));
+                                dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
+                                if (DEBUG) printf("Sending block %d - %d to %s:%zu\n", block_i, read_length, peerHost.c_str(), peerPort);
+                                n = networkSend(peerHost, peerPort, dataOut);
+                            }
+                        }
+                    }
+                    // if this received message from seeder, answer it unknown block or -1
+                    else {
+                        BTL::FileCache reply;
+                        reply.set_isseeder(false);
+                        reply.clear_cache();
+                        if (remain_block == 0){
+                            reply.add_cache(-1);
+                        }
+                        else {
+                            int cache_size = 0;
+                            for (int i = 0; i < block_count; i++){
+                                if (blockMark[i] == '1'){
+                                    reply.add_cache(i);
+                                    cache_size++;
+                                }
+                                if (cache_size > 300){
+                                    break;
+                                }
+                            }
+                        }
+                        if (DEBUG) printf("Asking for %d blocks\n", reply.cache_size());
+                        dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
+                        networkSend(peerHost, peerPort, dataOut);
+                    }
+                    doneWork = true;
                 }
                 else {
                     std::cout << "Command not found\n";
                 }
             }
         }
-        if (this->isSeeder or doneWork == true) {
-            timeout = 0;
-            timeout_hit = 1;
+        if (fileHandle == 0){
+            // No work, continue
             continue;
         }
-        // ask all peer for non written block
-        if (fileHandle != 0){
-            // Stand by mode 
-            if (remain_block == 0){
+        if (this->isSeeder) {
+            if (doneWork == true){
+                timeout = 10;
                 continue;
             }
-            // Ask seeder for last_unknown_block
-            for (last_unknown_block = 0; last_unknown_block < block_count; last_unknown_block++){
-                if (blockMark[last_unknown_block] == '1'){
-                    break;
-                }
-            }
+            // Ask all peer if they are done
+            timeout = timeout * timeout;
+            BTL::FileCache cache;
+            cache.set_isseeder(true);
+            dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &cache);
             for (auto peer: this->tracker->peers()){
-                // if (peer.isseeder()){
-                    // auto peer = this->tracker->peers(rand() % this->tracker->peers_size());
-                    BTL::CommonReply reply;
-                    reply.set_localport(this->localPort);
-                    reply.set_status(last_unknown_block);
-                    dataOut = wrapMessage(BTL::MessageType::COMMONREPLY, this->localPort, &reply);
+                if (peer.isseeder() == false) {
                     networkSend(peer.host(), peer.port(), dataOut);
-                // }
+                }
+                if (DEBUG) printf("Asking %s:%d\n", peer.host().c_str(), peer.port());
             }
-            timeout_hit++;
-            timeout = (int)pow(2.0,timeout_hit);
+            // Check for all peer done here?
+        }
+        else {
+            // if (doneWork == true) {
+            //     timeout = 16;
+            // }
+            // else {
+            //     timeout = timeout * timeout;
+            // }
         }
     }
     return;
