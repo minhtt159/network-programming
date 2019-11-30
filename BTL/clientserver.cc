@@ -262,6 +262,7 @@ void Sockpeer::run(){
                 printf("Sockpeer::run File hash: %s\n", fileHash.c_str());
 
                 startTime = time(NULL);
+                askTime = 0;
 
                 // Send fileInfo to all peers
                 BTL::FileInfo requestedFile;
