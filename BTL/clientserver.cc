@@ -525,7 +525,8 @@ void Sockpeer::run(){
                     blockMark[block_i] = '0';
                     remain_block = std::count(blockMark.begin(),blockMark.end(),'1');
                     if (DEBUG) printf("%s:%d <- block %d\t REM: %d\n", peerHost.c_str(), peerPort, block_i, remain_block);
-                        
+                    else std::cout << "\rRemaining: " << remain_block << "       " << std::flush;
+
                     if (remain_block == 0){
                         std::cout << "Sockpeer::run Received all\n";
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
@@ -579,20 +580,23 @@ void Sockpeer::run(){
                     }
                     // printf("Sockpeer::run Client %s:%d is asking for block %d\n", peerHost.c_str(), reply.localport(), reply.status());
                     if (DEBUG) printf("%s:%d ask for %d\n", peerHost.c_str(), reply.localport(), reply.status());
-                    askTime++;
-                    // char buffer[this->dataSize];
-                    int block_i = reply.status();
-                    int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
-                    
-                    // Prepare data
-                    BTL::FileData fileData;
-                    fileData.set_filename(fileName);
-                    fileData.set_offset(block_i * this->dataSize);
-                    fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
-                    // Send to that client
-                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
-                    networkSend(peerHost, reply.localport(), dataOut);
-                    doneWork = true;
+
+                    if (fileHandle != -1){
+                        askTime++;
+                        // char buffer[this->dataSize];
+                        int block_i = reply.status();
+                        int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
+                        
+                        // Prepare data
+                        BTL::FileData fileData;
+                        fileData.set_filename(fileName);
+                        fileData.set_offset(block_i * this->dataSize);
+                        fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
+                        // Send to that client
+                        dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
+                        networkSend(peerHost, reply.localport(), dataOut);
+                        doneWork = true;
+                    }
                 }
                 else {
                     std::cout << "Command not found\n";
