@@ -1,7 +1,7 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
 
-int DEBUG = 1;
+int DEBUG = 0;
 
 // Some inline helper function
 std::string string_to_hex(const std::string& input)
@@ -187,7 +187,7 @@ void Sockpeer::run(){
     bool doneWork;
     int askTime = 0;
     int timeout = 0;
-    int timeout_hit = 0;
+    int timeout_hit = 1;
 
     // Multiplexing fd
     fds[0].fd = this->networkObj->recvfd;
@@ -480,6 +480,7 @@ void Sockpeer::run(){
                     printf("Sockpeer::run Client open %s\n", fileName.c_str());
                     // Mark time begin
                     startTime = time(NULL);
+                    askTime = 0;
                     // Bounce this message to other client
                     // for (auto peer: this->tracker->peers()){
                     //     if (!peer.isseeder()){
@@ -562,6 +563,9 @@ void Sockpeer::run(){
                     BTL::CommonReply reply;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&reply, &zstream, &clean_eof);
 
+                    if (fileHandle == 0){
+                        continue;
+                    }
                     if (reply.status() == -1){
                         // Some peer is done, update it to seeder
                         // printf("Getting %s:%d\n", peerHost.c_str(), peerPort);
@@ -595,22 +599,20 @@ void Sockpeer::run(){
                     // printf("Sockpeer::run Client %s:%d is asking for block %d\n", peerHost.c_str(), reply.localport(), reply.status());
                     if (DEBUG) printf("%s:%d ask for %d\n", peerHost.c_str(), reply.localport(), reply.status());
 
-                    if (fileHandle != 0){
-                        askTime++;
-                        // char buffer[this->dataSize];
-                        int block_i = reply.status();
-                        int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
-                        
-                        // Prepare data
-                        BTL::FileData fileData;
-                        fileData.set_filename(fileName);
-                        fileData.set_offset(block_i * this->dataSize);
-                        fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
-                        // Send to that client
-                        dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
-                        networkSend(peerHost, reply.localport(), dataOut);
-                        doneWork = true;
-                    }
+                    askTime++;
+                    // char buffer[this->dataSize];
+                    int block_i = reply.status();
+                    int read_length = (fileSize - (block_i * this->dataSize)) < this->dataSize ? (fileSize - (block_i * this->dataSize)) : this->dataSize;
+                    
+                    // Prepare data
+                    BTL::FileData fileData;
+                    fileData.set_filename(fileName);
+                    fileData.set_offset(block_i * this->dataSize);
+                    fileData.set_data(std::string(fileBuffer + (block_i * this->dataSize), read_length));
+                    // Send to that client
+                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
+                    networkSend(peerHost, reply.localport(), dataOut);
+                    doneWork = true;    
                 }
                 else {
                     std::cout << "Command not found\n";
@@ -619,7 +621,7 @@ void Sockpeer::run(){
         }
         if (this->isSeeder or doneWork == true) {
             timeout = 0;
-            timeout_hit = 0;
+            timeout_hit = 1;
             continue;
         }
         // ask all peer for non written block
@@ -644,9 +646,8 @@ void Sockpeer::run(){
                     networkSend(peer.host(), peer.port(), dataOut);
                 // }
             }
-            timeout = (int)pow(2.0,timeout_hit);
             timeout_hit++;
-            // usleep(1);
+            timeout = (int)pow(2.0,timeout_hit);
         }
     }
     return;
