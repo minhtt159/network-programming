@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [[ ! -f $(which protoc) ]]; then
 	echo "No Protobuf"
 else
+	protoc --cpp_out=. udp.proto
 	if [ "$(uname)" == "Darwin" ]; then
 		g++ -Wall main.cpp clientserver.cc network.cc md5.cpp udp.pb.cc -std=c++11 -stdlib=libc++ -lprotobuf -o macos_binary       
 	elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
