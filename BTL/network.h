@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include <errno.h>
 #include <ifaddrs.h>
 #include <sys/socket.h>

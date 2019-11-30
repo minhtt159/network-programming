@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <thread>
+#include <cmath>
 #include <unordered_map>	// Map for marker
 #include "udp.pb.h"     	// Protobuf
 #include "network.h"		// Network
@@ -37,7 +38,7 @@ private:
 	// peer lookup map
 	std::unordered_map<std::string, bool> lookup;
 	// mark if peer is done
-	std::unordered_map<std::string, bool> markFile;
+	// std::unordered_map<std::string, bool> markFile;
 
 public:
 	// Network object for send and recv
