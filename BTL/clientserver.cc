@@ -1,7 +1,7 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
 
-int DEBUG = 0;
+int DEBUG = 1;
 
 // Some inline helper function
 std::string string_to_hex(const std::string& input)
@@ -252,7 +252,7 @@ void Sockpeer::run(){
                 struct stat sb;
                 fstat(fileHandle, &sb);
                 fileSize = sb.st_size;
-                printf("Sockpeer::run Server is sending \"%s\" with fileSize = %d to %d client(s)\n", fileName.c_str(), fileSize, this->tracker->peers_size());
+                printf("Sockpeer::run Server is sending \"%s\" with fileSize = %zu to %d client(s)\n", fileName.c_str(), fileSize, this->tracker->peers_size());
                 
                 // Allocate memory
                 fileBuffer = (char *)mmap(0, fileSize, PROT_READ, MAP_SHARED, fileHandle, 0);
@@ -527,7 +527,7 @@ void Sockpeer::run(){
                     // Mark block when done?
                     blockMark[block_i] = '0';
                     remain_block = std::count(blockMark.begin(),blockMark.end(),'1');
-                    if (DEBUG) printf("%s:%d <- block %d\t REM: %d\n", peerHost.c_str(), peerPort, block_i, remain_block);
+                    if (DEBUG) printf("%s:%zu <- block %d\t REM: %d\n", peerHost.c_str(), peerPort, block_i, remain_block);
                     else std::cout << "\rRemaining: " << remain_block << "       " << std::flush;
 
                     if (remain_block == 0){
@@ -563,10 +563,10 @@ void Sockpeer::run(){
                             if (peer->isseeder() == false){
                                 isDone = false;
                             }
-                            // printf("%s:%d - %d\n", peer->host().c_str(), peer->port(), peer->isseeder());
+                            if (DEBUG) printf("%s:%d - %d\n", peer->host().c_str(), peer->port(), peer->isseeder());
                         }
 
-                        if (isDone){
+                        if (isDone and remain_block == 0){
                             printf("All peers done\n");
                             printf("All time: %lu sec\n", time(NULL) - startTime);
                             printf("Ask time: %d\n", askTime);
