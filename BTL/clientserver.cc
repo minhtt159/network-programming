@@ -540,8 +540,19 @@ void Sockpeer::run(){
                         reply.set_status(-1);
                         reply.set_localport(this->localPort);
                         dataOut = wrapMessage(BTL::MessageType::COMMONREPLY, this->localPort, &reply);
+                        bool isDone = true;
                         for (auto peer: this->tracker->peers()){
                             networkSend(peer.host(), peer.port(), dataOut);
+                            if (peer.isseeder() == false){
+                                isDone = false;
+                            }
+                        }
+                        if (isDone){
+                            printf("All peers done\n");
+                            printf("All time: %lu sec\n", time(NULL) - startTime);
+                            printf("Ask time: %d\n", askTime);
+                            fileHandle = close(fileHandle);
+                            munmap(fileBuffer, fileSize);
                         }
                         // break;
                     }
