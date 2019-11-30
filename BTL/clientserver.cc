@@ -468,18 +468,18 @@ void Sockpeer::run(){
                     }
                     memcpy(this->fileBuffer + fileData.offset(), fileData.data().c_str(), fileData.data().length());
 
-                    // Bounce back to other client
-                    dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
-                    for (auto peer: this->tracker->peers()){
-                        if (peer.isseeder()){
-                            continue;
-                        }
-                        if (peer.host() == peerHost and peer.port() == peerPort){
-                            continue;
-                        }
-                        // Send file info to all peer that is not server and not the one who sent this message
-                        networkSend(peer.host(), peer.port(), dataOut);  
-                    }
+                    // Bounce back to other client (may duplicate)
+                    // dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
+                    // for (auto peer: this->tracker->peers()){
+                    //     if (peer.isseeder()){
+                    //         continue;
+                    //     }
+                    //     if (peer.host() == peerHost and peer.port() == peerPort){
+                    //         continue;
+                    //     }
+                    //     // Send file info to all peer that is not server and not the one who sent this message
+                    //     networkSend(peer.host(), peer.port(), dataOut);  
+                    // }
 
                     // Mark block when done?
                     blockMark[block_i] = '0';
@@ -491,7 +491,10 @@ void Sockpeer::run(){
                     if (remain_block == 0){
                         std::cout << "\nSockpeer::run Received all\n";
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
-
+                        std::string rawData = std::string(this->fileBuffer, this->fileSize);
+                        if (md5(rawData) == this->fileHash) {
+                            printf("FileHash is correct\n");
+                        }
                         msync(this->fileBuffer, this->fileSize, MS_SYNC);
                         this->tracker->set_isseeder(true);
                         // Send done to all

@@ -4,45 +4,43 @@ Tên sinh viên: Trần Tuấn Minh
 
 MSV: 15021754
 
+# Table of Contents
+
+1. [Bài toán](#bài-toán)
+2. [Thiết kế giao thức](#thiết-kế-giao-thức)
+3. [Protocol](#protocol)
+4. [Demo](#demo)
+5. [Tham khảo](#tài-liệu-tham-khảo--các-kĩ-thuật-sử-dụng)
+
 ### Bài toán:
 
 - Server: S1
-
 - Client: C1, C2, C3
-
+- Server và Client được gọi là Peer
+- Server còn được gọi là Seeder
 - Server cần truyền 2 file (1-10MB) đến Client(s)
-
 - Người dùng nhập tên file cần truyền tại Server, đánh dấu mốc thời gian (1)
-
 - Sau khi Client(s) nhận được hết file, hiện thời gian (2)
-
 - Client(s) có thể gửi dữ liệu cho nhau
-
 - Checksum sau khi nhận file
-
 - Thời gian = (2) - (1)
 
 ### Thiết kế giao thức:
 
 1. Các máy đồng thời tạo socket lắng nghe tại port định nghĩa trước, port này dùng chung cho tất cả user (?)
-
 2. Server được bật lên đầu tiên, khởi tạo môi trường mạng
-
 3. Connect
 	- Client(s) kết nối đến Server, cập nhật Server vào danh sách ClientInfo
 	- Server gửi danh sách ClientInfo, đồng thời cập nhật Client vào danh sách của mình
 	- Client(s) nhận danh sách ClientInfo của Server, cập nhật lại ClientInfo của mình
-
 4. File transfer
 	- Server in ra danh sách tên file có thể gửi
 	- Server nhập tên file, bắt đầu tính thời gian (1)
 	- Server gửi thông tin sẽ chuyển file đến Client(s): {tên file, checksum, dung lượng file}
 	- Server sẽ gửi lần lượt các packet: block[i] -> Client[i%3]
-
 5. Extra
 	- [√] Client sau khi nhận được packet, gửi packet đó đến cho Client khác
-	- [√] Nếu không nhận được block nào từ Server, Client bắt đầu hỏi các packet còn thiếu theo exponential backoff
-	- [√] Khi Client nhận được đủ file, thông báo cho Client khác biết, in ra thời gian (2)
+	- [√] Khi Client nhận được đủ file, thông báo cho các Peer biết, in ra thời gian (2)
 	- [√] Khi tất cả Client nhận được đủ file, dừng và nhận lệnh tiếp theo
 
 ### Protocol:
