@@ -45,15 +45,9 @@ MSV: 15021754
 	- [√] Khi Client nhận được đủ file, thông báo cho Client khác biết, in ra thời gian (2)
 	- [√] Khi tất cả Client nhận được đủ file, dừng và nhận lệnh tiếp theo
 
-### Tài liệu tham khảo & Các kĩ thuật sử dụng:
+### Protocol:
 
-https://stackoverflow.com/questions/14998261/2-way-udp-chat-application
-
-https://stackoverflow.com/questions/17925051/fast-textfile-reading-in-c
-
-https://en.wikipedia.org/wiki/Exponential_backoff
-
-https://developers.google.com/protocol-buffers
+![alt text](image/Protocol.png "Protocol")
 
 ### Message Type:
 ```
@@ -145,20 +139,20 @@ Các peer sẽ trao đổi dữ liệu qua FileData
 |offset|điểm bắt đầu của dữ liệu| |
 |data|dữ liệu| |
 
-### Common Reply:
+### File Cache:
 ```
-message CommonReply {
-	uint32 status = 1;
-	uint32 localPort = 2;
+message FileCache {
+	bool isSeeder = 1;
+	repeated uint32 cache = 2;
 }
 ```
 
-Các peer nếu cần block data nào sẽ gửi status ứng với block đó, nếu xong, gửi -1 để thông báo tới các peer
+Server hoặc Seeder sẽ hỏi các Client hay Peer xung quanh, Peer nếu đang trong trạng thái nhận sẽ gửi danh sách các block chưa được nhận (cache) cho Seeder. 
 
 |Nội dung|Diễn giải|Ghi chú|
 |-----------|-----------|-----------|
-|status|block cần hỏi| |
-|localPort|port của peer hỏi| |
+|isSeeder|Peer hỏi là Client hay Server| |
+|cache|danh sách các block cần hỏi| |
 
 ### Message structure:
 
@@ -174,10 +168,12 @@ Tất cả các message gửi lên server sẽ có cấu trúc như sau
 
 Lưu ý: Cần phải có protobuf trước khi build/run
 
+### Tài liệu tham khảo & Các kĩ thuật sử dụng:
 
+https://stackoverflow.com/questions/14998261/2-way-udp-chat-application
 
+https://stackoverflow.com/questions/17925051/fast-textfile-reading-in-c
 
+https://en.wikipedia.org/wiki/Exponential_backoff
 
-
-
-
+https://developers.google.com/protocol-buffers

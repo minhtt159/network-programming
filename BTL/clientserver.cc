@@ -404,6 +404,7 @@ void Sockpeer::run(){
                         continue;
                     }
                     // New file will arrived
+                    this->tracker->set_isseeder(false);
                     for (int i=0; i < this->tracker->peers_size(); i++){
                         auto peer = this->tracker->mutable_peers(i);
                         if (peer->host() == peerHost and peer->port() == peerPort){
@@ -492,7 +493,7 @@ void Sockpeer::run(){
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
 
                         msync(this->fileBuffer, this->fileSize, MS_SYNC);
-                        // this->tracker->set_isseeder(true);
+                        this->tracker->set_isseeder(true);
                         // Send done to all
                         BTL::FileCache fileCache;
                         fileCache.set_isseeder(false);
@@ -593,7 +594,7 @@ void Sockpeer::run(){
             // No work, continue
             continue;
         }
-        if (this->isSeeder) {
+        if (this->tracker->isseeder()) {
             if (doneWork == true){
                 timeout = 10;
                 continue;
