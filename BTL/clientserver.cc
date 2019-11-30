@@ -566,7 +566,7 @@ void Sockpeer::run(){
                     if (fileHandle == 0){
                         continue;
                     }
-                    if (reply.status() == (size_t)-1){
+                    if (reply.status() == -1){
                         // Some peer is done, update it to seeder
                         // printf("Getting %s:%d\n", peerHost.c_str(), peerPort);
                         bool isDone = true;
