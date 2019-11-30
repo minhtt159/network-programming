@@ -289,15 +289,15 @@ void Sockpeer::run(){
                     fileData.set_data(rawData);
                     dataOut = wrapMessage(BTL::MessageType::FILEDATA, this->localPort, &fileData);
                     // VERSION 1: SEND ALL TO ALL
-                    // for (auto peer: this->tracker->peers()){
-                    //     // Should spawn thread to do this?
-                    //     networkSend(peer.host(), peer.port(), dataOut);
-                    //     printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
-                    // }
+                    for (auto peer: this->tracker->peers()){
+                        // Should spawn thread to do this?
+                        networkSend(peer.host(), peer.port(), dataOut);
+                        if (DEBUG) printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
+                    }
                     // VERSION 2: SEND 1/peer_size
-                    auto peer = this->tracker->peers(block_count % this->tracker->peers_size());
-                    networkSend(peer.host(), peer.port(), dataOut);
-                    if (DEBUG) printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
+                    // auto peer = this->tracker->peers(block_count % this->tracker->peers_size());
+                    // networkSend(peer.host(), peer.port(), dataOut);
+                    // if (DEBUG) printf("Sending block: %d to %s:%d\n", block_count, peer.host().c_str(), peer.port());
 
                     block_count += 1;
                 }
