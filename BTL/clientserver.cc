@@ -528,7 +528,7 @@ void Sockpeer::run(){
                     else std::cout << "\rRemaining: " << remain_block << "       " << std::flush;
 
                     if (remain_block == 0){
-                        std::cout << "Sockpeer::run Received all\n";
+                        std::cout << "\nSockpeer::run Received all\n";
                         printf("Download time: %lu sec\n", time(NULL) - startTime);
                         msync(fileBuffer, fileSize, MS_SYNC);
 
