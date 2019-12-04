@@ -14,6 +14,9 @@
 #include <errno.h>
 // Listen on file descriptor events
 #include <poll.h>
+// File System
+#include <filesystem>
+namespace fs = std::filesystem;
 // Map pages of memory
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -28,6 +31,15 @@
 // Serialize message
 std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google::protobuf::Message* msgData);
 
+struct fileObject {
+    // File variables
+    int fileHandle;
+    std::string fileName;
+    std::string fileHash;
+    size_t fileSize;
+    char* fileBuffer;
+};
+
 class Sockpeer
 {
 private:
@@ -40,33 +52,35 @@ private:
 	//
     int askTime;
     int dupTime;
-    // File variables
-    int fileHandle;
-    char* fileBuffer;
-    std::string fileName;
-    std::string fileHash;
-    size_t fileSize;
+    // 
+    int downloadCount;
+    int uploadCount;
+    int fileCount;
 
 protected:
 	void finalize();
 
 public:
+	std::unordered_map<int, fileObject> clientObjectMap;
+	// Server object for client
+	BTL::HostInfo* server;
+	// Client object for server
+	BTL::ClientInfo* client;
 	// Network object for send and recv
 	Network* networkObj;
-	// Client Info list
-	BTL::ClientInfo* tracker;
-	// localPort for networkObj->send
+	// 
 	int localPort;
+	std::string localAddress;
 	// Helper 
 	size_t dataSize;
+	// 
+	bool isServer;
 	// Return true if connected to network, false otherwise
 	bool connected;
-	// Return true if this peer is server
-	bool isSeeder;
 	// Main run loop, read sdk
 	void run();
 	// Contructor
-	Sockpeer(int localPort, std::string remoteHost, int remotePort, bool isSeeder);
+	Sockpeer(int localPort, std::string remoteHost, int remotePort, bool isServer);
 	// Destructor
 	~Sockpeer();
 };

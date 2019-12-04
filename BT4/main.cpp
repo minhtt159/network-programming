@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 	// Read args
-	bool isSeeder;
+	bool isServer;
 	std::string remoteHost, tmp;
 	int remotePort, localPort;
 
@@ -23,14 +23,14 @@ int main(int argc, char** argv) {
 		exit(-1);
 	}
 	else if (argc == 2) {
-		isSeeder = true;
+		isServer = true;
 		localPort = strtol(argv[1], NULL, 10);
 
 		remoteHost = "";
 		remotePort = 0;
 	}
 	else {
-		isSeeder = false;
+		isServer = false;
 		localPort = strtol(argv[1], NULL, 10);
 		tmp = argv[2];
 		remoteHost = tmp.substr(0, tmp.find(":"));
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Join the network
-	Sockpeer peer = Sockpeer(localPort, remoteHost, remotePort, isSeeder);
+	Sockpeer peer = Sockpeer(localPort, remoteHost, remotePort, isServer);
 	
 	// If cannot join / create, exit
 	if (!peer.connected) {

@@ -22,10 +22,7 @@ message HostInfo {
 }
 
 message ClientInfo {
-	string remoteHost = 1;
-	uint32 localPort = 2;
-	bool isSender = 3;
-	repeated HostInfo peers = 4;
+	repeated HostInfo peers = 1;
 }
 
 message FileInfo {
