@@ -56,7 +56,7 @@ message MessageType {
 		CLIENTINFO = 1;
 		FILEINFO = 2;
 		FILEDATA = 3;
-		COMMONREPLY = 4;
+		FILECACHE = 4;
 	}
 	Message message = 1;
 	uint32 localPort = 2;

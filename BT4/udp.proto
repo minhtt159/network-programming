@@ -18,7 +18,7 @@ message MessageType {
 message HostInfo {
 	string host = 1;
 	uint32 port = 2;
-	bool isSender = 3;
+	bool issender = 3;
 }
 
 message ClientInfo {
@@ -29,6 +29,8 @@ message FileInfo {
 	string filehash = 1;
 	string fileName = 2;
 	uint32 fileSize = 3;
+	bool isdownload = 4;
+	bool issender = 5;
 }
 
 message FileData {
@@ -38,11 +40,12 @@ message FileData {
 }
 
 message FileCache {
-	bool isSender = 1;
-	repeated uint32 cache = 2;
+	string fileName = 1;
+	bool isSender = 2;
+	repeated uint32 cache = 3;
 }
 
 message ListFile {
-	bool isSender = 1;
-	string listFile = 2;
+	bool issender = 1;
+	repeated string listFile = 2;
 }

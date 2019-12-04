@@ -16,7 +16,7 @@
 #include <poll.h>
 // File System
 #include <filesystem>
-namespace fs = std::filesystem;
+namespace fs = std::__fs::filesystem;
 // Map pages of memory
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -24,6 +24,7 @@ namespace fs = std::filesystem;
 #include <iomanip>
 #include <cmath>
 #include <unordered_map>	// Map for marker
+#include <list>				// List for jobs
 #include "udp.pb.h"     	// Protobuf
 #include "network.h"		// Network
 #include "md5.h"			// Hash function
@@ -36,8 +37,38 @@ struct fileObject {
     int fileHandle;
     std::string fileName;
     std::string fileHash;
+    std::string relativePath;
     size_t fileSize;
-    char* fileBuffer;
+    fileObject(){
+
+    };
+    fileObject(int x, std::string y, std::string z, std::string w, size_t t){
+    	this->fileHandle = x;
+    	this->fileName = y;
+    	this->fileHash = w;
+    	this->fileSize = t;
+    	this->relativePath = z;
+    }
+};
+
+struct Job{
+	fileObject file;
+	BTL::HostInfo peer;
+	bool isDownload;
+	std::string blockMark;
+	int remain_block;
+	int block_count;
+	Job(fileObject x, BTL::HostInfo y, bool z, std::string a, int b, int c){
+		this->file = x;
+		this->peer = y;
+		this->isDownload = z;
+		this->blockMark = a;
+		this->remain_block = b;
+		this->block_count = c;
+	}
+	bool operator==(const Job &p) const{
+		return this->file.fileName == p.file.fileName;
+	}
 };
 
 class Sockpeer
@@ -61,7 +92,9 @@ protected:
 	void finalize();
 
 public:
-	std::unordered_map<int, fileObject> clientObjectMap;
+	std::list<fileObject> clientObjectList;
+
+	std::list<Job> jobList;
 	// Server object for client
 	BTL::HostInfo* server;
 	// Client object for server
