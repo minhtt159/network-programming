@@ -2,7 +2,7 @@
 #include <google/protobuf/util/delimited_message_util.h>
 namespace util = google::protobuf::util;
 
-int DEBUG = 1;
+int DEBUG = 0;
 char menu[] = "1. Download <file>\n2. Upload <file>\n3. ListFileServer\n4. ListFileClient\n";
 
 // Some inline helper function
@@ -256,7 +256,7 @@ void Sockpeer::run(){
                                 dataOut = wrapMessage(BTL::MessageType::FILEINFO, this->localPort, &request);
                                 networkSend(this->server->host(), this->server->port(), dataOut);
                                 // Add send job
-                                block_count = file.fileSize / this->dataSize;
+                                block_count = file.fileSize / this->dataSize + 1;
                                 char buffer[block_count];
                                 memset(buffer, '0', block_count);
                                 blockMark = std::string(buffer, block_count);
@@ -351,7 +351,7 @@ void Sockpeer::run(){
                             for (auto file: this->clientObjectList){
                                 if (fileInfo.filename() == file.fileName){
                                     // Found file, add send job
-                                    block_count = file.fileSize / this->dataSize;
+                                    block_count = file.fileSize / this->dataSize + 1;
                                     char buffer[block_count];
                                     memset(buffer, '0', block_count);
                                     blockMark = std::string(buffer, block_count);
@@ -401,7 +401,7 @@ void Sockpeer::run(){
                     }
                     fileObject file = {fileHandle, fileInfo.filename(), relativePath, fileInfo.filehash(), fileInfo.filesize()};
                     // Add received job
-                    block_count = fileInfo.filesize() / this->dataSize;
+                    block_count = fileInfo.filesize() / this->dataSize + 1;
                     char buffer[block_count];
                     memset(buffer, '1', block_count);
                     blockMark = std::string(buffer, block_count);
@@ -438,6 +438,8 @@ void Sockpeer::run(){
                                 dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &fileCache);
                                 networkSend(peerHost, peerPort, dataOut);
                                 // remove job
+                                downloadCount++;
+                                printf("Download: %d\tUpload: %d\n", downloadCount, uploadCount);
                                 this->jobList.remove(*aJob);
                                 if (DEBUG) printf("Sending -1 fileCache to server, %lu jobs left\n", this->jobList.size());
                             }
@@ -449,7 +451,7 @@ void Sockpeer::run(){
                 else if (peerMessageType.message() == BTL::MessageType::FILECACHE){
                     BTL::FileCache fileCache;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileCache, &zstream, &clean_eof);
-                    printf("fileName: %s\n", fileCache.filename().c_str());
+                    // printf("fileName: %s\n", fileCache.filename().c_str());
                     // Find coresponding job
                     for (aJob = this->jobList.begin(); aJob != this->jobList.end(); aJob++){
                         if (aJob->file.fileName == fileCache.filename()){
@@ -482,6 +484,8 @@ void Sockpeer::run(){
                             else {
                                 if (fileCache.cache(0) == -1){
                                     // Job is done
+                                    uploadCount++;
+                                    printf("Download: %d\tUpload: %d\n", downloadCount, uploadCount);
                                     this->jobList.remove(*aJob);
                                     break;
                                 }
@@ -504,6 +508,29 @@ void Sockpeer::run(){
                         }
                     }
                     doneWork = true;
+                }
+                else if (peerMessageType.message() == BTL::MessageType::LISTFILE){
+                    BTL::ListFile listFile;
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&listFile, &zstream, &clean_eof);
+                    if (listFile.issender()) {
+                        // this peer asked for list of file
+                        this->clientObjectList.clear();
+                        listSharedFile(&this->clientObjectList);
+                        BTL::ListFile a = BTL::ListFile();
+                        a.set_issender(false);
+                        for (auto file: this->clientObjectList){
+                            a.add_listfile(file.fileName);
+                        }
+                        dataOut = wrapMessage(BTL::MessageType::LISTFILE, this->localPort, &a);
+                        networkSend(peerHost, peerPort, dataOut);
+                    }
+                    else {
+                        // this peer return list of files
+                        printf("Number of files: %d\n", listFile.listfile_size());
+                        for (auto file: listFile.listfile()){
+                            printf("%s\n", file.c_str());
+                        }
+                    }
                 }
                 else {
                     std::cout << "Command not found\n";
