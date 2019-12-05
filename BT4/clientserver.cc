@@ -210,7 +210,10 @@ void Sockpeer::run(){
                 }
                 command = std::string(output_buffer, n-1);
                 printf("Command: %s\n", command.c_str());
-                if (command.substr(command.length() - 5) == "lient") {
+                if (command.substr(command.length() - 5) == "ogout"){
+                    break;
+                }
+                else if (command.substr(command.length() - 5) == "lient") {
                     this->clientObjectList.clear();
                     listSharedFile(&this->clientObjectList);
                     printf("Number of files: %lu\n", this->clientObjectList.size());
