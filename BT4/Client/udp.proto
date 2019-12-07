@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package BTL;
+
+message MessageType {
+	enum Message {
+		HOSTINFO = 0;
+		CLIENTINFO = 1;
+		FILEINFO = 2;
+		FILEDATA = 3;
+		FILECACHE = 4;
+		LISTFILE = 5;
+	}
+	Message message = 1;
+	uint32 localPort = 2;
+}
+
+message HostInfo {
+	string host = 1;
+	uint32 port = 2;
+	bool issender = 3;
+}
+
+message ClientInfo {
+	repeated HostInfo peers = 1;
+}
+
+message FileInfo {
+	string filehash = 1;
+	string fileName = 2;
+	uint32 fileSize = 3;
+	bool isdownload = 4;
+	bool issender = 5;
+}
+
+message FileData {
+	string fileName = 1;
+	uint32 offset = 2;
+	bytes data = 3;
+}
+
+message FileCache {
+	string fileName = 1;
+	bool isSender = 2;
+	repeated uint32 cache = 3;
+}
+
+message ListFile {
+	bool issender = 1;
+	repeated string listFile = 2;
+}
