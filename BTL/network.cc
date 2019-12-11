@@ -19,7 +19,7 @@ Network::Network(int PORT, int BUFFER){
     servaddr.sin_addr.s_addr    = INADDR_ANY;   // 0.0.0.0 
     servaddr.sin_port           = htons(PORT);  // PORT
 
-    // // Set socket timeout (1s)
+    // Set socket timeout (1s)
     struct timeval tv;
     tv.tv_sec = 1;
     tv.tv_usec = 0;
@@ -52,9 +52,9 @@ size_t networkSend(std::string HOST, int PORT, std::string BUFFER) {
     memset(&servaddr, 0, sizeof(servaddr)); 
 
     // Filling server information 
-    servaddr.sin_family = AF_INET; 
-    servaddr.sin_port = htons(PORT); 
-    servaddr.sin_addr.s_addr = inet_addr(HOST.c_str()); 
+    servaddr.sin_family         = AF_INET;                  // IPv4
+    servaddr.sin_port           = htons(PORT);              // PORT
+    servaddr.sin_addr.s_addr    = inet_addr(HOST.c_str());  // HOST
 
     // Convert BUFFER string to char array
     char charBUFF[BUFFER.length() + 1];
@@ -74,17 +74,12 @@ size_t Network::networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT)
         std::cout << "Network:networkRecv recvfd not initialized";
         return false;
     }
-    
-    // net.inet.udp.maxdgram: 9216
-    // if (setsockopt(this->recvfd, SOL_SOCKET, SO_RCVBUF, &this->BUFFSIZE, sizeof(this->BUFFSIZE)) < 0) {
-    //     std::cout << "Network:networkRecv setsockopt failed\n";
-    //     return false;
-    // }
 
     // Clear client socket address information
     socklen_t clientLength = sizeof(*CLIENT);
     memset(CLIENT, 0, clientLength);
     memset(BUFFER, 0, BUFFSIZE);
+    
     // Recv charBUFF with maximum BUFFSIZE, should MSG_WAITALL? 
     size_t n = recvfrom(this->recvfd, BUFFER, BUFFSIZE, 0, (struct sockaddr *)CLIENT, &clientLength);
     // printf("%lu\n",n);

@@ -22,10 +22,10 @@ private:
 public:
 	// Socket for receiving message
 	int recvfd;
-	// Recv UDP packet from peer, return condition, buffer & information about sender info
+	// Recv UDP packet from peer, return (length of buffer, buffer & information about sender info)
 	size_t networkRecv(char* BUFFER, size_t BUFFSIZE, sockaddr_in * CLIENT);
 	// Constructor create listening socket recvfd at PORT
-	Network(int port, int buffize);
+	Network(int port, int buffsize);
 	// Destructor
 	~Network();
 };

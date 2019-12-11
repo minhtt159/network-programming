@@ -25,7 +25,7 @@
 #include "network.h"		// Network
 #include "md5.h"			// Hash function
 
-// Serialize message
+// Serialize message before sending
 std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google::protobuf::Message* msgData);
 
 class Sockpeer
@@ -38,9 +38,9 @@ private:
 	// peer lookup map
 	std::unordered_map<std::string, bool> lookup;
 	//
-    int askTime;
-    int dupTime;
-    // File variables
+    int askTime;		// Mark how many time this peer receive FILECACHE message
+    int dupTime;		// Mark how many time this peer receive duplicate FILEDATA message
+    // File variables, just send 1 file at a time
     int fileHandle;
     char* fileBuffer;
     std::string fileName;
@@ -53,18 +53,25 @@ protected:
 public:
 	// Network object for send and recv
 	Network* networkObj;
+
 	// Client Info list
 	BTL::ClientInfo* tracker;
+
 	// localPort for networkObj->send
 	int localPort;
+
 	// Helper 
 	size_t dataSize;
+	
 	// Return true if connected to network, false otherwise
 	bool connected;
+
 	// Return true if this peer is server
 	bool isSeeder;
+
 	// Main run loop, read sdk
 	void run();
+
 	// Contructor
 	Sockpeer(int localPort, std::string remoteHost, int remotePort, bool isSeeder);
 	// Destructor
