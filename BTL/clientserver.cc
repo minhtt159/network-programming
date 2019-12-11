@@ -1,7 +1,8 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
 
-int DEBUG = 0;
+int DEBUG = 1;
+int BACKOFF = 1;
 
 // Some inline helper function
 std::string string_to_hex(const std::string& input)
@@ -189,7 +190,13 @@ void Sockpeer::run(){
     int remain_block = 0;
     bool doneWork;
 
-    int timeout = 10;
+    int timeout;
+    if (BACKOFF){
+        timeout = 10;
+    }
+    else {
+        timeout = 100;
+    }
 
     // I/O Multiplexing
     fds[0].fd = this->networkObj->recvfd;
@@ -535,7 +542,7 @@ void Sockpeer::run(){
                     askTime++;
                     // If this received message from peer, send known block
                     if (fileCache.isseeder() == false){
-                        if (fileCache.cache(0) == -1){
+                        if (fileCache.cache(0) == (uint32_t)-1){
                             // Mark this peer is done
                             bool isDone = true;
                             for (int i = 0; i < this->tracker->peers_size(); i++){
@@ -547,7 +554,7 @@ void Sockpeer::run(){
                                     isDone = false;
                                 }
                             }
-                            if (isDone){
+                            if (isDone and this->tracker->isseeder()){
                                 this->finalize();
                                 blockMark = "";
                             }
@@ -606,10 +613,17 @@ void Sockpeer::run(){
         }
         if (this->tracker->isseeder()) {
             if (doneWork == true){
-                timeout = 10;
+                if (BACKOFF){
+                    timeout = 10;
+                }
+                else {
+                    timeout = 100;
+                }
                 continue;
             }
-            timeout = timeout * timeout;    // Backoff
+            if (BACKOFF){
+                timeout = timeout * timeout;
+            }
             // Ask all non seeder peer if they are done
             BTL::FileCache cache;
             cache.set_isseeder(true);
