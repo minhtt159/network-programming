@@ -520,6 +520,7 @@ void Sockpeer::run(){
                         // Check if all peer is done
                         bool isDone = true;
                         for (auto peer: this->tracker->peers()){
+                            if (DEBUG) printf("FILEDATA: Sending done message to %s:%zu\n", peerHost.c_str(), peerPort);
                             networkSend(peer.host(), peer.port(), dataOut);
                             if (peer.isseeder() == false){
                                 isDone = false;
@@ -539,7 +540,6 @@ void Sockpeer::run(){
                         if (DEBUG) printf("Sockpeer::run FileCache - No fileHandle\n");
                         continue;
                     }
-                    askTime++;
                     // If this received message from peer, send known block
                     if (fileCache.isseeder() == false){
                         if (fileCache.cache(0) == (uint32_t)-1){
@@ -578,11 +578,13 @@ void Sockpeer::run(){
                     }
                     // If this received message from seeder, answer it unknown block or -1 if done
                     else {
+                        askTime++;
                         BTL::FileCache reply;
                         reply.set_isseeder(false);
                         reply.clear_cache();
                         if (remain_block == 0){
                             reply.add_cache(-1);
+                            if (DEBUG) printf("FILECACHE: Send done message to %s:%zu\n", peerHost.c_str(), peerPort);
                         }
                         else {
                             int cache_size = 0;
@@ -595,8 +597,8 @@ void Sockpeer::run(){
                                     break;
                                 }
                             }
+                            if (DEBUG) printf("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
                         }
-                        if (DEBUG) printf("Asking for %d blocks\n", reply.cache_size());
                         dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
                         networkSend(peerHost, peerPort, dataOut);
                     }
@@ -614,15 +616,15 @@ void Sockpeer::run(){
         if (this->tracker->isseeder()) {
             if (doneWork == true){
                 if (BACKOFF){
-                    timeout = 10;
+                    timeout = 50;
                 }
                 else {
-                    timeout = 100;
+                    timeout = 10;
                 }
                 continue;
             }
             if (BACKOFF){
-                timeout = timeout * timeout;
+                timeout = timeout * 2;
             }
             // Ask all non seeder peer if they are done
             BTL::FileCache cache;
