@@ -7,23 +7,19 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
-// Time
-#include <ctime>
+#include <ctime>            // Time
 #include <unistd.h>
-// Error
-#include <errno.h>
-// Listen on file descriptor events
-#include <poll.h>
-// Map pages of memory
-#include <sys/mman.h>
-#include <sys/stat.h>
+#include <errno.h>          // Error
+#include <poll.h>           // Listen on file descriptor events
+#include <sys/mman.h>       // Map pages of memory
+#include <sys/stat.h>       // File stat
 #include <fcntl.h>
 #include <iomanip>
-#include <cmath>
-#include <unordered_map>	// Map for marker
-#include "udp.pb.h"     	// Protobuf
-#include "network.h"		// Network
-#include "md5.h"			// Hash function
+#include <cmath>            // Math operation
+#include <unordered_map>    // Map for marker
+#include "udp.pb.h"         // Protobuf
+#include "network.h"        // Network
+#include "md5.h"            // Hash function
 
 // Serialize message before sending
 std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google::protobuf::Message* msgData);

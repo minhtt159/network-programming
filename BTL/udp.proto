@@ -11,7 +11,9 @@ message MessageType {
 		FILECACHE = 4;
 	}
 	Message message = 1;
-	uint32 localPort = 2;
+	uint64 timestamp = 2;
+	uint64 timestamp_different = 3;
+	uint32 localPort = 4;
 }
 
 message HostInfo {
