@@ -78,8 +78,7 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
         server->set_isseeder(true);
 
         // Add server to lookup
-        std::string marker = remoteHost + ":";
-        marker += std::to_string(remotePort);
+        std::string marker = remoteHost + ":" + std::to_string(remotePort);
         this->lookup[marker] = true;
         
         // Get initial message from server
@@ -133,14 +132,12 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
         google::protobuf::util::ParseDelimitedFromZeroCopyStream(&serverClientInfo, &zstream, &clean_eof);
 
         // Blacklist self from peer ClientInfo list
-        marker = serverClientInfo.remotehost() + ":";
-        marker += std::to_string(this->localPort);
+        marker = serverClientInfo.remotehost() + ":" + std::to_string(this->localPort);
         this->lookup[marker] = true;
 
         // Add peers from server's peer list
         for (auto peer: serverClientInfo.peers()) {
-            marker = peer.host() + ":";
-            marker += std::to_string(peer.port());
+            marker = peer.host() + ":" + std::to_string(peer.port());
             if (this->lookup.find(marker) == this->lookup.end()){
                 // If peer not found in lookup map, add new
                 BTL::HostInfo* a = this->tracker->add_peers();
@@ -192,9 +189,10 @@ void Sockpeer::finalize(){
 void Sockpeer::run(){
     // Helper variable
     static std::string blockMark = "1";
-    static std::string fileCache_window = "";
-    static std::string peerHost_window = "";
-    static size_t peerPort_window = 0;
+    std::string fileCache_window = "";
+    std::string peerHost_window = "";
+    std::string debug_window = "";
+    size_t peerPort_window = 0;
 
     size_t n;
     char output_buffer[this->BUFFSIZE];
@@ -352,8 +350,7 @@ void Sockpeer::run(){
                     BTL::HostInfo peer;
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
                     
-                    marker = peer.host() + ":";
-                    marker += std::to_string(peer.port());
+                    marker = peer.host() + ":" + std::to_string(peer.port());
                     if (this->lookup.find(marker) == this->lookup.end()){
                         // Peer not found, add new
                         BTL::HostInfo* a = this->tracker->add_peers();
@@ -377,13 +374,11 @@ void Sockpeer::run(){
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerClientInfo, &zstream, &clean_eof);
                     
                     // Blacklist self from peer ClientInfo list
-                    marker = peerClientInfo.remotehost() + ":";
-                    marker += std::to_string(this->localPort);
+                    marker = peerClientInfo.remotehost() + ":" + std::to_string(this->localPort);
                     this->lookup[marker] = true;
 
                     // Add peer to network
-                    marker = peerHost + ":";
-                    marker += std::to_string(peerClientInfo.localport());
+                    marker = peerHost + ":" + std::to_string(peerClientInfo.localport());
                     if (this->lookup.find(marker) == this->lookup.end()){
                         // Sender not found, add sender to self peers
                         BTL::HostInfo* sender = this->tracker->add_peers();
@@ -410,8 +405,7 @@ void Sockpeer::run(){
 
                     // Add peer's client list to my client list, skip if already added
                     for (auto peer : peerClientInfo.peers()){
-                        marker = peer.host() + ":";
-                        marker += std::to_string(peer.port());
+                        marker = peer.host() + ":" + std::to_string(peer.port());
 
                         if (this->lookup.find(marker) == this->lookup.end()){
                             // Peer not found, add new
@@ -602,8 +596,12 @@ void Sockpeer::run(){
                         if (remain_block == 0){
                             reply.add_cache(-1);
                             debug("FILECACHE: Send done message to %s:%zu\n", peerHost.c_str(), peerPort);
+                            networkSend(peerHost, peerPort, dataOut);
                         }
                         else {
+                            if (fileCache_window != ""){
+                                continue;
+                            }
                             int cache_size = 0;
                             for (int i = 0; i < block_count; i++){
                                 if (blockMark[i] == '1'){
@@ -615,11 +613,11 @@ void Sockpeer::run(){
                                 }
                             }
                             // debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
+                            debug_window = "from " + std::to_string(reply.cache(0)) + " to " + std::to_string(reply.cache(reply.cache_size()-1));
+                            fileCache_window = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
+                            peerHost_window = peerHost;
+                            peerPort_window = peerPort;
                         }
-                        fileCache_window = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
-                        peerHost_window = peerHost;
-                        peerPort_window = peerPort;
-                        // networkSend(peerHost, peerPort, dataOut);
                     }
                 }
                 else {
@@ -631,16 +629,16 @@ void Sockpeer::run(){
             // No work, continue
             continue;
         }
-        if (this->tracker->isseeder()) {
-            if (doneWork == true){
-                if (BACKOFF){
-                    timeout = 10;
-                }
-                else {
-                    timeout = 100;
-                }
-                continue;
+        if (doneWork == true){
+            if (BACKOFF){
+                timeout = 10;
             }
+            else {
+                timeout = 100;
+            }
+            continue;
+        }
+        if (this->tracker->isseeder()) {
             if (BACKOFF){
                 timeout = timeout * 2;
             }
@@ -657,14 +655,10 @@ void Sockpeer::run(){
             }
             // Check for all peer done here?
         }
-        else {
-            if (doneWork == true){
-                continue;
-            }
-            if (fileCache_window != ""){
-                networkSend(peerHost_window, peerPort_window, fileCache_window);
-                fileCache_window = "";
-            }
+        else if (fileCache_window != ""){
+            debug("Ask %s blocks to %s:%zu\n", debug_window.c_str(), peerHost_window.c_str(), peerPort_window);
+            networkSend(peerHost_window, peerPort_window, fileCache_window);
+            fileCache_window = "";
         }
     }
     return;
