@@ -3,7 +3,7 @@
 namespace util = google::protobuf::util;
 
 int DEBUG = 1;
-int BACKOFF = 0;
+int BACKOFF = 1;
 int quit_flag = 1;
 
 void debug(const char *fmt, ...)
@@ -192,6 +192,10 @@ void Sockpeer::finalize(){
 void Sockpeer::run(){
     // Helper variable
     static std::string blockMark = "1";
+    static std::string fileCache_window = "";
+    static std::string peerHost_window = "";
+    static size_t peerPort_window = 0;
+
     size_t n;
     char output_buffer[this->BUFFSIZE];
     std::string dataOut;
@@ -587,6 +591,7 @@ void Sockpeer::run(){
                                 networkSend(peerHost, peerPort, dataOut);
                             }
                         }
+                        doneWork = true;
                     }
                     // If this received message from seeder, answer it unknown block or -1 if done
                     else {
@@ -609,12 +614,13 @@ void Sockpeer::run(){
                                     break;
                                 }
                             }
-                            debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
+                            // debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
                         }
-                        dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
-                        networkSend(peerHost, peerPort, dataOut);
+                        fileCache_window = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
+                        peerHost_window = peerHost;
+                        peerPort_window = peerPort;
+                        // networkSend(peerHost, peerPort, dataOut);
                     }
-                    doneWork = true;
                 }
                 else {
                     std::cout << "Command not found\n";
@@ -650,6 +656,15 @@ void Sockpeer::run(){
                 }
             }
             // Check for all peer done here?
+        }
+        else {
+            if (doneWork == true){
+                continue;
+            }
+            if (fileCache_window != ""){
+                networkSend(peerHost_window, peerPort_window, fileCache_window);
+                fileCache_window = "";
+            }
         }
     }
     return;
