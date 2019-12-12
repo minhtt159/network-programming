@@ -348,7 +348,7 @@ void Sockpeer::run(){
                 if (peerMessageType.message() == BTL::MessageType::HOSTINFO) {
                     // Some peer is new to the network
                     BTL::HostInfo peer;
-                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
+                    util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
                     
                     marker = peer.host() + ":" + std::to_string(peer.port());
                     if (this->lookup.find(marker) == this->lookup.end()){
@@ -371,7 +371,7 @@ void Sockpeer::run(){
                 else if (peerMessageType.message() == BTL::MessageType::CLIENTINFO) {
                     // ClientInfo message for exchange node
                     BTL::ClientInfo peerClientInfo;
-                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerClientInfo, &zstream, &clean_eof);
+                    util::ParseDelimitedFromZeroCopyStream(&peerClientInfo, &zstream, &clean_eof);
                     
                     // Blacklist self from peer ClientInfo list
                     marker = peerClientInfo.remotehost() + ":" + std::to_string(this->localPort);
@@ -447,7 +447,7 @@ void Sockpeer::run(){
                     }
                     // Only non-seeder can get this message
                     BTL::FileInfo fileInfo;
-                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
+                    util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
 
                     this->fileName = fileInfo.filename();
                     this->fileHash = fileInfo.filehash();
@@ -599,7 +599,7 @@ void Sockpeer::run(){
                             networkSend(peerHost, peerPort, dataOut);
                         }
                         else {
-                            if (fileCache_window != ""){
+                            if (debug_window != "" and fileCache_window != ""){
                                 continue;
                             }
                             int cache_size = 0;
@@ -655,8 +655,8 @@ void Sockpeer::run(){
             }
             // Check for all peer done here?
         }
-        else if (fileCache_window != ""){
-            debug("Ask %s blocks to %s:%zu\n", debug_window.c_str(), peerHost_window.c_str(), peerPort_window);
+        else if (debug_window != "" and fileCache_window != ""){
+            debug("Ask %s -> %s:%zu\n", debug_window.c_str(), peerHost_window.c_str(), peerPort_window);
             networkSend(peerHost_window, peerPort_window, fileCache_window);
             fileCache_window = "";
         }
