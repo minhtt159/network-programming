@@ -362,6 +362,8 @@ void Sockpeer::run(){
                             printf("%s:%d - %d\n", i.host().c_str(), i.port(), i.isseeder());
                         }
                     }
+                    this->askTime = 0;
+                    this->dupTime = 0;
                     doneWork = true;
                 }
                 else if (peerMessageType.message() == BTL::MessageType::CLIENTINFO) {
@@ -470,8 +472,8 @@ void Sockpeer::run(){
                     printf("Sockpeer::run Client open %s, waiting for %5d blocks\n", this->fileName.c_str(), block_count);
                     // Mark time begin
                     startTime = time(NULL);
-                    askTime = 0;    // Mark how many time this peer receive FILECACHE message
-                    dupTime = 0;    // Mark how many time this peer receive duplicate FILEDATA message
+                    this->askTime = 0;    // Mark how many time this peer receive FILECACHE message
+                    this->dupTime = 0;    // Mark how many time this peer receive duplicate FILEDATA message
 
                     doneWork = true;
                 }
@@ -480,7 +482,8 @@ void Sockpeer::run(){
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
-                        dupTime++;
+                        debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
+                        this->dupTime++;
                         continue;
                     }
                     if (this->fileHandle == 0){
@@ -490,7 +493,8 @@ void Sockpeer::run(){
                     int block_i = fileData.offset() / this->dataSize;
                     // If this block is already set, skip it
                     if (blockMark[block_i] == '0'){
-                        dupTime++;
+                        debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
+                        this->dupTime++;
                         continue;
                     }
                     memcpy(this->fileBuffer + fileData.offset(), fileData.data().c_str(), fileData.data().length());
@@ -500,7 +504,7 @@ void Sockpeer::run(){
                     remain_block = std::count(blockMark.begin(),blockMark.end(),'1');
 
                     // debug("%s:%zu <- block %d\t REM: %d\n", peerHost.c_str(), peerPort, block_i, remain_block);
-                    std::cout << "\rREM:" << std::setw(6) << remain_block << "\tDUP:" << std::setw(6) << dupTime << "   " << std::flush;
+                    std::cout << "\rREM:" << std::setw(6) << remain_block << "\tDUP:" << std::setw(6) << this->dupTime << "   " << std::flush;
 
                     if (remain_block == 0){
                         // If this peer is done receiving file, it become a seeder
