@@ -1,7 +1,7 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
 
-int DEBUG = 0;
+int DEBUG = 1;
 int BACKOFF = 1;
 int quit_flag = 2;
 
@@ -594,8 +594,12 @@ void Sockpeer::run(){
                         reply.clear_cache();
                         if (remain_block == 0){
                             reply.add_cache(-1);
-                            debug("FILECACHE: Send done message to %s:%zu\n", peerHost.c_str(), peerPort);
-                            networkSend(peerHost, peerPort, dataOut);
+                            dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
+                            window s = window(peerHost, peerPort, dataOut);
+                            if (this->cc_window.find(s) == this->cc_window.end()){
+                                debug("FILECACHE: Send done message to %s:%zu\n", peerHost.c_str(), peerPort);
+                                this->cc_window[s] = true;
+                            }
                         }
                         else {
                             int cache_size = 0;
@@ -608,11 +612,11 @@ void Sockpeer::run(){
                                     break;
                                 }
                             }
-                            // debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
                             
                             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
                             window s = window(peerHost, peerPort, dataOut);
                             if (this->cc_window.find(s) == this->cc_window.end()){
+                                debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
                                 this->cc_window[s] = true;
                             }
                         }
@@ -657,7 +661,6 @@ void Sockpeer::run(){
         else {
             while (this->cc_window.size() != 0){
                 auto x = this->cc_window.begin();
-                debug("Return FILECACHE to %s:%zu\n", x->first.host.c_str(), x->first.port);
                 networkSend(x->first.host, x->first.port, x->first.data);
                 this->cc_window.erase(this->cc_window.begin());
             }
