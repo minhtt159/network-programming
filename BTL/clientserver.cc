@@ -638,10 +638,10 @@ void Sockpeer::run(){
             }
             continue;
         }
+        else if (BACKOFF){
+            timeout = timeout * 2;
+        }
         if (this->tracker->isseeder()) {
-            if (BACKOFF){
-                timeout = timeout * 2;
-            }
             // Ask all non seeder peer if they are done
             BTL::FileCache cache;
             cache.set_is_seeder(true);
