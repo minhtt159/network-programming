@@ -40,7 +40,7 @@ struct window{
     //     return this->index < p.index
     // }
     bool operator==(const window &p) const{
-        return (this->port == p.port) and (this->host == p.host) and (this->host == p.host);
+        return (this->port == p.port) && (this->host == p.host) && (this->data == p.data);
     }
 };
 namespace std{

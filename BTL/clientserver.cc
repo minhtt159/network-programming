@@ -1,6 +1,5 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
-namespace util = google::protobuf::util;
 
 int DEBUG = 1;
 int BACKOFF = 1;
@@ -45,9 +44,9 @@ std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google
     message->set_message(msgType);
     message->set_localport(localPort);
     // Write MessageType to stream
-    util::SerializeDelimitedToOstream(*message, &stream);
+    google::protobuf::util::SerializeDelimitedToOstream(*message, &stream);
     // Write Message to stream
-    util::SerializeDelimitedToOstream(*msgData, &stream);
+    google::protobuf::util::SerializeDelimitedToOstream(*msgData, &stream);
     // return stream
     return stream.str();
 };
@@ -189,12 +188,6 @@ void Sockpeer::finalize(){
 void Sockpeer::run(){
     // Helper variable
     static std::string blockMark = "1";
-    std::string fileCache_window = "";
-    std::string peerHost_window = "";
-    std::string last_fileCache_window;
-    std::string debug_window = "";
-    std::string lsat_debug_window;
-    size_t peerPort_window = 0;
 
     size_t n;
     char output_buffer[this->BUFFSIZE];
@@ -343,7 +336,7 @@ void Sockpeer::run(){
                 std::stringstream stream = std::stringstream(peerData);
                 google::protobuf::io::IstreamInputStream zstream(&stream);
                 bool clean_eof = true;
-                util::ParseDelimitedFromZeroCopyStream(&peerMessageType, &zstream, &clean_eof);
+                google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerMessageType, &zstream, &clean_eof);
                 clean_eof = true;
 
                 size_t peerPort = peerMessageType.localport();          // Read peerPort
@@ -351,7 +344,7 @@ void Sockpeer::run(){
                 if (peerMessageType.message() == BTL::MessageType::HOSTINFO) {
                     // Some peer is new to the network
                     BTL::HostInfo peer;
-                    util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peer, &zstream, &clean_eof);
                     
                     marker = peer.host() + ":" + std::to_string(peer.port());
                     if (this->lookup.find(marker) == this->lookup.end()){
@@ -374,7 +367,7 @@ void Sockpeer::run(){
                 else if (peerMessageType.message() == BTL::MessageType::CLIENTINFO) {
                     // ClientInfo message for exchange node
                     BTL::ClientInfo peerClientInfo;
-                    util::ParseDelimitedFromZeroCopyStream(&peerClientInfo, &zstream, &clean_eof);
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerClientInfo, &zstream, &clean_eof);
                     
                     // Blacklist self from peer ClientInfo list
                     marker = peerClientInfo.remotehost() + ":" + std::to_string(this->localPort);
@@ -450,7 +443,7 @@ void Sockpeer::run(){
                     }
                     // Only non-seeder can get this message
                     BTL::FileInfo fileInfo;
-                    util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileInfo, &zstream, &clean_eof);
 
                     this->fileName = fileInfo.filename();
                     this->fileHash = fileInfo.filehash();
@@ -484,7 +477,7 @@ void Sockpeer::run(){
                 }
                 else if (peerMessageType.message() == BTL::MessageType::FILEDATA){
                     BTL::FileData fileData;
-                    util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
+                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
                         dupTime++;
@@ -657,10 +650,11 @@ void Sockpeer::run(){
             }
             // Check for all peer done here?
         }
-        else if (this->cc_window.size() != 0){
-            for (auto &x: this->cc_window){
-                networkSend(x.first.host, x.first.port, x.first.data);
-                this->cc_window.erase(x.first);
+        else {
+            while (this->cc_window.size() != 0){
+                auto x = this->cc_window.begin();
+                networkSend(x->first.host, x->first.port, x->first.data);
+                this->cc_window.erase(this->cc_window.begin());
             }
         }
     }
