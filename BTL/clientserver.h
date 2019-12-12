@@ -9,6 +9,7 @@
 #include <cstring>
 #include <ctime>            // Time
 #include <unistd.h>
+#include <cstdarg>          // va_start from debug
 #include <errno.h>          // Error
 #include <poll.h>           // Listen on file descriptor events
 #include <sys/mman.h>       // Map pages of memory
@@ -23,6 +24,24 @@
 
 // Serialize message before sending
 std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google::protobuf::Message* msgData);
+
+struct window{
+    std::string host;       // host:port
+    uint32_t index;         // block offset
+    std::string data;       // data packet
+
+    window(uint32_t i, std::string d){
+        this->index = i;
+        this->data = d;
+    }
+
+    // bool operator<(const window &p)const {
+    //     return this->index < p.index
+    // }
+    bool operator==(const window &p) const{
+        return (this->index == p.index) and (this->host == p.host);
+    }
+};
 
 class Sockpeer
 {
@@ -42,11 +61,14 @@ private:
     std::string fileName;
     std::string fileHash;
     size_t fileSize;
-
-protected:
+    // 
 	void finalize();
+    // CControl window variable
+    int max_windows;
+
 
 public:
+    std::unordered_map<int, window> cc_window;
 	// Network object for send and recv
 	Network* networkObj;
 

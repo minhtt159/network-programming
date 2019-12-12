@@ -1,14 +1,15 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
+namespace util = google::protobuf::util;
 
 int DEBUG = 1;
-int BACKOFF = 1;
+int BACKOFF = 0;
 int quit_flag = 1;
 
-void debug(char *fmt, ...)
+void debug(const char *fmt, ...)
 {
-    va_list ap;
     if (DEBUG) {
+        va_list ap;
         fflush(stdout);
         fprintf(stderr, "debug: ");
         va_start(ap, fmt);
@@ -44,9 +45,9 @@ std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google
     message->set_message(msgType);
     message->set_localport(localPort);
     // Write MessageType to stream
-    google::protobuf::util::SerializeDelimitedToOstream(*message, &stream);
+    util::SerializeDelimitedToOstream(*message, &stream);
     // Write Message to stream
-    google::protobuf::util::SerializeDelimitedToOstream(*msgData, &stream);
+    util::SerializeDelimitedToOstream(*msgData, &stream);
     // return stream
     return stream.str();
 };
@@ -66,6 +67,8 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
     // Some helper variables
     this->localPort  = localPort;
     this->isSeeder  = isSeeder;
+
+    this->max_windows = 4096;
 
     if (!isSeeder) {
         // Add server to tracker list
@@ -107,6 +110,7 @@ Sockpeer::Sockpeer(int localPort, std::string remoteHost, int remotePort, bool i
             else {
                 if (DEBUG) std::cout << "\rSockpeer::Sockpeer recv error, attempt " << i << ", try again" << std::flush;
             }
+            i--;
         }
         // After 10 attemps, server no response
         if (n == -1){
@@ -210,7 +214,7 @@ void Sockpeer::run(){
         timeout = 10;
     }
     else {
-        timeout = 10;
+        timeout = 100;
     }
 
     // I/O Multiplexing
@@ -232,7 +236,12 @@ void Sockpeer::run(){
             ret = poll(fds, 2, timeout);    // Server will continuously ask if client is done receiving file
         }
         else {
-            ret = poll(fds, 1, -1);         // Client will passively wait for a packet
+            if (this->tracker->isseeder()){
+                ret = poll(fds, 1, timeout);    // Client when become a seeder, ask other peers
+            }
+            else {
+                ret = poll(fds, 1, -1);         // Client will passively wait for a packet
+            }
         }
         
         if (ret < 0) {
@@ -329,7 +338,7 @@ void Sockpeer::run(){
                 std::stringstream stream = std::stringstream(peerData);
                 google::protobuf::io::IstreamInputStream zstream(&stream);
                 bool clean_eof = true;
-                google::protobuf::util::ParseDelimitedFromZeroCopyStream(&peerMessageType, &zstream, &clean_eof);
+                util::ParseDelimitedFromZeroCopyStream(&peerMessageType, &zstream, &clean_eof);
                 clean_eof = true;
 
                 size_t peerPort = peerMessageType.localport();          // Read peerPort
@@ -474,7 +483,7 @@ void Sockpeer::run(){
                 }
                 else if (peerMessageType.message() == BTL::MessageType::FILEDATA){
                     BTL::FileData fileData;
-                    google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
+                    util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
                         dupTime++;
@@ -514,7 +523,7 @@ void Sockpeer::run(){
                         this->tracker->set_isseeder(true);
                         // Send done to all peers
                         BTL::FileCache fileCache;
-                        fileCache.set_isseeder(false);
+                        fileCache.set_is_seeder(false);
                         fileCache.clear_cache();
                         fileCache.add_cache(-1);
                         dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &fileCache);
@@ -543,7 +552,7 @@ void Sockpeer::run(){
                         continue;
                     }
                     // If this received message from peer, send known block
-                    if (fileCache.isseeder() == false){
+                    if (fileCache.is_seeder() == false){
                         if (fileCache.cache(0) == (uint32_t)-1){
                             // Mark this peer is done
                             bool isDone = true;
@@ -583,7 +592,7 @@ void Sockpeer::run(){
                     else {
                         askTime++;
                         BTL::FileCache reply;
-                        reply.set_isseeder(false);
+                        reply.set_is_seeder(false);
                         reply.clear_cache();
                         if (remain_block == 0){
                             reply.add_cache(-1);
@@ -622,7 +631,7 @@ void Sockpeer::run(){
                     timeout = 10;
                 }
                 else {
-                    timeout = 10;
+                    timeout = 100;
                 }
                 continue;
             }
@@ -631,7 +640,7 @@ void Sockpeer::run(){
             }
             // Ask all non seeder peer if they are done
             BTL::FileCache cache;
-            cache.set_isseeder(true);
+            cache.set_is_seeder(true);
             cache.clear_cache();
             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &cache);
             for (auto peer: this->tracker->peers()){

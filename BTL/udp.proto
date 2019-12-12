@@ -11,9 +11,9 @@ message MessageType {
 		FILECACHE = 4;
 	}
 	Message message = 1;
-	uint64 timestamp = 2;
-	uint64 timestamp_different = 3;
-	uint32 localPort = 4;
+	uint32 localPort = 2;
+	uint64 timestamp = 3;
+	uint64 timestamp_different = 4;
 }
 
 message HostInfo {
@@ -42,6 +42,7 @@ message FileData {
 }
 
 message FileCache {
-	bool isSeeder = 1;
-	repeated uint32 cache = 2;
+	bool is_seeder = 1;
+	bool is_ack = 2;
+	repeated uint32 cache = 3;
 }
