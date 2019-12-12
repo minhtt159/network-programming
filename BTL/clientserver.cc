@@ -191,7 +191,9 @@ void Sockpeer::run(){
     static std::string blockMark = "1";
     std::string fileCache_window = "";
     std::string peerHost_window = "";
+    std::string last_fileCache_window;
     std::string debug_window = "";
+    std::string lsat_debug_window;
     size_t peerPort_window = 0;
 
     size_t n;
@@ -216,7 +218,7 @@ void Sockpeer::run(){
         timeout = 10;
     }
     else {
-        timeout = 100;
+        timeout = 150;
     }
 
     // I/O Multiplexing
@@ -238,12 +240,13 @@ void Sockpeer::run(){
             ret = poll(fds, 2, timeout);    // Server will continuously ask if client is done receiving file
         }
         else {
-            if (this->tracker->isseeder()){
-                ret = poll(fds, 1, timeout);    // Client when become a seeder, ask other peers
-            }
-            else {
-                ret = poll(fds, 1, -1);         // Client will passively wait for a packet
-            }
+            // if (this->tracker->isseeder()){
+            //     ret = poll(fds, 1, timeout);    // Client when become a seeder, ask other peers
+            // }
+            // else {
+            //     ret = poll(fds, 1, -1);         // Client will passively wait for a packet
+            // }
+            ret = poll(fds, 1, timeout);
         }
         
         if (ret < 0) {
@@ -585,7 +588,6 @@ void Sockpeer::run(){
                                 networkSend(peerHost, peerPort, dataOut);
                             }
                         }
-                        doneWork = true;
                     }
                     // If this received message from seeder, answer it unknown block or -1 if done
                     else {
@@ -599,9 +601,6 @@ void Sockpeer::run(){
                             networkSend(peerHost, peerPort, dataOut);
                         }
                         else {
-                            if (debug_window != "" and fileCache_window != ""){
-                                continue;
-                            }
                             int cache_size = 0;
                             for (int i = 0; i < block_count; i++){
                                 if (blockMark[i] == '1'){
@@ -613,12 +612,15 @@ void Sockpeer::run(){
                                 }
                             }
                             // debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
-                            debug_window = "from " + std::to_string(reply.cache(0)) + " to " + std::to_string(reply.cache(reply.cache_size()-1));
-                            fileCache_window = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
-                            peerHost_window = peerHost;
-                            peerPort_window = peerPort;
+                            
+                            dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
+                            window s = window(peerHost, peerPort, dataOut);
+                            if (this->cc_window.find(s) == this->cc_window.end()){
+                                this->cc_window[s] = true;
+                            }
                         }
                     }
+                    doneWork = true;
                 }
                 else {
                     std::cout << "Command not found\n";
@@ -634,7 +636,7 @@ void Sockpeer::run(){
                 timeout = 10;
             }
             else {
-                timeout = 100;
+                timeout = 150;
             }
             continue;
         }
@@ -655,10 +657,11 @@ void Sockpeer::run(){
             }
             // Check for all peer done here?
         }
-        else if (debug_window != "" and fileCache_window != ""){
-            debug("Ask %s -> %s:%zu\n", debug_window.c_str(), peerHost_window.c_str(), peerPort_window);
-            networkSend(peerHost_window, peerPort_window, fileCache_window);
-            fileCache_window = "";
+        else if (this->cc_window.size() != 0){
+            for (auto &x: this->cc_window){
+                networkSend(x.first.host, x.first.port, x.first.data);
+                this->cc_window.erase(x.first);
+            }
         }
     }
     return;

@@ -26,12 +26,13 @@
 std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google::protobuf::Message* msgData);
 
 struct window{
-    std::string host;       // host:port
-    uint32_t index;         // block offset
+    std::string host;       // host
+    size_t port;            // port
     std::string data;       // data packet
 
-    window(uint32_t i, std::string d){
-        this->index = i;
+    window(std::string h, size_t p, std::string d){
+        this->host = h;
+        this->port = p;
         this->data = d;
     }
 
@@ -39,9 +40,23 @@ struct window{
     //     return this->index < p.index
     // }
     bool operator==(const window &p) const{
-        return (this->index == p.index) and (this->host == p.host);
+        return (this->port == p.port) and (this->host == p.host) and (this->host == p.host);
     }
 };
+namespace std{
+    template<>
+    struct hash<window>{
+        std::size_t operator()(const window& k) const{
+            using std::size_t;
+            using std::hash;
+            using std::string;
+            return ((hash<string>()(k.host)
+                    ^ (hash<string>()(k.data) << 1)) >> 1 )
+                    ^ (hash<int>()(k.port) << 1 );
+        }
+    };
+}
+
 
 class Sockpeer
 {
@@ -68,7 +83,7 @@ private:
 
 
 public:
-    std::unordered_map<int, window> cc_window;
+    std::unordered_map<window, bool> cc_window;
 	// Network object for send and recv
 	Network* networkObj;
 
