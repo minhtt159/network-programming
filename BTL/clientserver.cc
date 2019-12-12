@@ -1,9 +1,9 @@
 #include "clientserver.h"
 #include <google/protobuf/util/delimited_message_util.h>
 
-int DEBUG = 1;
+int DEBUG = 0;
 int BACKOFF = 1;
-int quit_flag = 1;
+int quit_flag = 2;
 
 void debug(const char *fmt, ...)
 {
@@ -208,7 +208,7 @@ void Sockpeer::run(){
 
     int timeout;
     if (BACKOFF){
-        timeout = 10;
+        timeout = 20;
     }
     else {
         timeout = 150;
@@ -482,7 +482,7 @@ void Sockpeer::run(){
                     google::protobuf::util::ParseDelimitedFromZeroCopyStream(&fileData, &zstream, &clean_eof);
                     // Seeder should not read this message
                     if (this->tracker->isseeder()){
-                        debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
+                        // debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
                         this->dupTime++;
                         continue;
                     }
@@ -493,7 +493,7 @@ void Sockpeer::run(){
                     int block_i = fileData.offset() / this->dataSize;
                     // If this block is already set, skip it
                     if (blockMark[block_i] == '0'){
-                        debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
+                        // debug("%s:%zu send this message\n", peerHost.c_str(), peerPort);
                         this->dupTime++;
                         continue;
                     }
@@ -630,7 +630,7 @@ void Sockpeer::run(){
         }
         if (doneWork == true){
             if (BACKOFF){
-                timeout = 10;
+                timeout = 20;
             }
             else {
                 timeout = 150;
@@ -657,6 +657,7 @@ void Sockpeer::run(){
         else {
             while (this->cc_window.size() != 0){
                 auto x = this->cc_window.begin();
+                debug("Return FILECACHE to %s:%zu\n", x->first.host.c_str(), x->first.port);
                 networkSend(x->first.host, x->first.port, x->first.data);
                 this->cc_window.erase(this->cc_window.begin());
             }
