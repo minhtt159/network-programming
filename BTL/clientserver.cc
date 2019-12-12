@@ -594,6 +594,7 @@ void Sockpeer::run(){
                         reply.clear_cache();
                         if (remain_block == 0){
                             reply.add_cache(-1);
+
                             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
                             window s = window(peerHost, peerPort, dataOut);
                             if (this->cc_window.find(s) == this->cc_window.end()){
