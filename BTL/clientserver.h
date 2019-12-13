@@ -28,19 +28,19 @@ std::string wrapMessage(BTL::MessageType::Message msgType, int localPort, google
 struct window{
     std::string host;       // host
     size_t port;            // port
-    std::string data;       // data packet
+    int first;       // data packet
 
-    window(std::string h, size_t p, std::string d){
+    window(std::string h, size_t p, int f){
         this->host = h;
         this->port = p;
-        this->data = d;
+        this->first = f;
     }
 
     // bool operator<(const window &p)const {
     //     return this->index < p.index
     // }
     bool operator==(const window &p) const{
-        return (this->port == p.port) && (this->host == p.host) && (this->data == p.data);
+        return (this->port == p.port) && (this->host == p.host) && (this->first == p.first);
     }
 };
 namespace std{
@@ -51,7 +51,7 @@ namespace std{
             using std::hash;
             using std::string;
             return ((hash<string>()(k.host)
-                    ^ (hash<string>()(k.data) << 1)) >> 1 )
+                    ^ (hash<int>()(k.first) << 1)) >> 1 )
                     ^ (hash<int>()(k.port) << 1 );
         }
     };
@@ -83,7 +83,7 @@ private:
 
 
 public:
-    std::unordered_map<window, bool> cc_window;
+    std::unordered_map<window, std::string> cc_window;
 	// Network object for send and recv
 	Network* networkObj;
 

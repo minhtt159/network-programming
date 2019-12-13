@@ -596,10 +596,10 @@ void Sockpeer::run(){
                             reply.add_cache(-1);
 
                             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
-                            window s = window(peerHost, peerPort, dataOut);
+                            window s = window(peerHost, peerPort, -1);
                             if (this->cc_window.find(s) == this->cc_window.end()){
                                 debug("FILECACHE: Send done message to %s:%zu\n", peerHost.c_str(), peerPort);
-                                this->cc_window[s] = true;
+                                this->cc_window[s] = dataOut;
                             }
                         }
                         else {
@@ -615,10 +615,10 @@ void Sockpeer::run(){
                             }
                             
                             dataOut = wrapMessage(BTL::MessageType::FILECACHE, this->localPort, &reply);
-                            window s = window(peerHost, peerPort, dataOut);
+                            window s = window(peerHost, peerPort, reply.cache_size());
                             if (this->cc_window.find(s) == this->cc_window.end()){
                                 debug("Asking %s:%zu for %d blocks\n", peerHost.c_str(), peerPort, reply.cache_size());
-                                this->cc_window[s] = true;
+                                this->cc_window[s] = dataOut;
                             }
                         }
                     }
@@ -662,7 +662,7 @@ void Sockpeer::run(){
         else {
             while (this->cc_window.size() != 0){
                 auto x = this->cc_window.begin();
-                networkSend(x->first.host, x->first.port, x->first.data);
+                networkSend(x->first.host, x->first.port, x->second);
                 this->cc_window.erase(this->cc_window.begin());
             }
         }
