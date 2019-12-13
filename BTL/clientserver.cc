@@ -182,6 +182,7 @@ void Sockpeer::finalize(){
     else {
         printf("Sockpeer::run Cannot close file\n");
     }
+    this->cc_window.clear();
     quit_flag--;
 }
 
